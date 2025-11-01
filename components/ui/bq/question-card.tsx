@@ -7,6 +7,7 @@ import {
 import Image from "next/image";
 import { useState } from "react";
 import { Option } from "@prisma/client";
+import { icons } from "@/lib/constants";
 
 export default function QuestionCard({
   number,
@@ -25,9 +26,12 @@ export default function QuestionCard({
 }) {
   const [selAnswer, setSelAnswer] = useState("");
 
+  console.log("boop", correctAnswer)
+
   function handleSelectAnswer(optionId: string) {
     setSelAnswer(optionId);
   }
+
   return (
     <div className="w-full rounded-sm bg-pink-100 shadow-md shadow-pink-200">
       <div className="w-full rounded-t-sm p-4 bg-pink-200 flex flex-row gap-4 items-center">
@@ -46,7 +50,7 @@ export default function QuestionCard({
             onClick={() => handleSelectAnswer(option.id)}
           >
             <div className="bg-pink-400 p-1 w-8 h-8 rounded-full">
-              {option.icon}
+              {option.icon && icons[option.icon]}
             </div>{" "}
             <b>{option.name}</b>
           </button>
@@ -65,13 +69,13 @@ export default function QuestionCard({
           </div>
         </div>
       )}
-      {selAnswer !== 0 && selAnswer !== correctAnswer && (
+      {selAnswer !== "" && selAnswer !== correctAnswer && (
         <div>
           <div className="w-full rounded-t-sm p-4 bg-red-200 flex flex-row gap-4 items-center">
             <div className="rounded-full bg-red-300 p-2">
               <XIcon width={16} height={16} />
             </div>
-            <h2 className="text-xl font-bold">Correct</h2>
+            <h2 className="text-xl font-bold">Incorrect</h2>
           </div>
           <div className="w-full bg-red-100 p-4">
             <p>{correctExplanation}</p>

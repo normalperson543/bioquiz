@@ -11,6 +11,7 @@ import QuestionCard from "./question-card";
 import { MailIcon, PhoneIcon } from "lucide-react";
 
 export default function QuizPageUI({ quiz }: { quiz: QuizWithPublicInfo }) {
+  console.log(quiz);
   return (
     <div
       className={`w-full h-full bg-pink-50 text-black ${comingSoon.className}`}
@@ -30,8 +31,11 @@ export default function QuizPageUI({ quiz }: { quiz: QuizWithPublicInfo }) {
             className="rounded-sm"
           />
           <div className="flex flex-col gap-2 text-black">
-            <h2 className="text-4xl font-bold">
-              {quiz.owner.firstName} {quiz.owner.lastName}
+            <h2 className="text-4xl">
+              <span className="font-bold">
+                {quiz.owner.firstName} {quiz.owner.lastName}
+              </span>{" "}
+              (@{quiz.owner.username})
             </h2>
             <p>{quiz.description}</p>
           </div>
@@ -52,7 +56,7 @@ export default function QuizPageUI({ quiz }: { quiz: QuizWithPublicInfo }) {
       <div className="p-8">
         {quiz.questions.map((question) => (
           <QuestionCard
-            number={quiz.questions.findIndex((q) => q.id === question.id)}
+            number={quiz.questions.findIndex((q) => q.id === question.id) + 1}
             questionName={question.questionName}
             options={question.options} //golly we need to find a better way to do this
             correctAnswer={question.correctAnswer}

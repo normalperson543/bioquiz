@@ -9,3 +9,7 @@ export const linkTypes = [
             friendlyName: "Email"
         },
 ]
+
+export const icons = [
+    "1️⃣","2️⃣","3️⃣",
+]

@@ -7,7 +7,11 @@ export async function getQuiz(id: string) {
     include: {
       links: true,
       owner: true,
-      questions: true,
+      questions: {
+        include: {
+          options: true
+        }
+      },
       
     }
   })
