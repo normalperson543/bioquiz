@@ -15,6 +15,7 @@ export default function QuestionCard({
   options,
   correctAnswer,
   correctExplanation,
+  lockedFromAnsweringDb,
   comments,
 }: {
   number: number;
@@ -23,6 +24,7 @@ export default function QuestionCard({
   correctAnswer: string;
   correctExplanation: string;
   comments?: null;
+  lockedFromAnsweringDb: boolean;
 }) {
   const [selAnswer, setSelAnswer] = useState("");
 
