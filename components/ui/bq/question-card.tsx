@@ -1,26 +1,33 @@
-import { Option } from "@/lib/types";
 import {
   CheckIcon,
   MessageCircleQuestion,
   MessageSquareIcon,
+  XIcon,
 } from "lucide-react";
 import Image from "next/image";
+import { useState } from "react";
+import { Option } from "@prisma/client";
 
 export default function QuestionCard({
   number,
   questionName,
   options,
-  isCorrect,
+  correctAnswer,
   correctExplanation,
   comments,
 }: {
   number: number;
   questionName: string;
   options: Option[];
-  isCorrect?: boolean;
+  correctAnswer: string;
   correctExplanation: string;
   comments?: null;
 }) {
+  const [selAnswer, setSelAnswer] = useState("");
+
+  function handleSelectAnswer(optionId: string) {
+    setSelAnswer(optionId);
+  }
   return (
     <div className="w-full rounded-sm bg-pink-100 shadow-md shadow-pink-200">
       <div className="w-full rounded-t-sm p-4 bg-pink-200 flex flex-row gap-4 items-center">
@@ -33,24 +40,19 @@ export default function QuestionCard({
         <div className="w-full flex flex-col gap-2">
           <p>{questionName}</p>
         </div>
-        <button className="w-full p-4 flex flex-row justify-start rounded-full border-1 border-pink-400 bg-pink-300 hover:bg-pink-400 items-center gap-2">
-          <div className="bg-pink-400 p-1 w-8 h-8 rounded-full">☁️</div>{" "}
-          <b>Doing something</b>
-        </button>
-        <button className="w-full p-4 flex flex-row justify-start rounded-full border-1 border-pink-400 bg-pink-300 hover:bg-pink-400 items-center gap-2">
-          <div className="bg-pink-400 p-1 w-8 h-8 rounded-full">☁️</div>{" "}
-          <b>Doing something</b>
-        </button>
-        <button className="w-full p-4 flex flex-row justify-start rounded-full border-1 border-pink-400 bg-pink-300 hover:bg-pink-400 items-center gap-2">
-          <div className="bg-pink-400 p-1 w-8 h-8 rounded-full">☁️</div>{" "}
-          <b>Doing something</b>
-        </button>
-        <button className="w-full p-4 flex flex-row justify-start rounded-full border-1 border-pink-400 bg-pink-300 hover:bg-pink-400 items-center gap-2">
-          <div className="bg-pink-400 p-1 w-8 h-8 rounded-full">☁️</div>{" "}
-          <b>Doing something</b>
-        </button>
+        {options.map((option) => (
+          <button
+            className="w-full p-4 flex flex-row justify-start rounded-full border-1 border-pink-400 bg-pink-300 hover:bg-pink-400 items-center gap-2"
+            onClick={() => handleSelectAnswer(option.id)}
+          >
+            <div className="bg-pink-400 p-1 w-8 h-8 rounded-full">
+              {option.icon}
+            </div>{" "}
+            <b>{option.name}</b>
+          </button>
+        ))}
       </div>
-      {isCorrect && (
+      {selAnswer === correctAnswer && (
         <div>
           <div className="w-full rounded-t-sm p-4 bg-green-200 flex flex-row gap-4 items-center">
             <div className="rounded-full bg-green-300 p-2">
@@ -59,6 +61,19 @@ export default function QuestionCard({
             <h2 className="text-xl font-bold">Correct</h2>
           </div>
           <div className="w-full bg-green-100 p-4">
+            <p>{correctExplanation}</p>
+          </div>
+        </div>
+      )}
+      {selAnswer !== 0 && selAnswer !== correctAnswer && (
+        <div>
+          <div className="w-full rounded-t-sm p-4 bg-red-200 flex flex-row gap-4 items-center">
+            <div className="rounded-full bg-red-300 p-2">
+              <XIcon width={16} height={16} />
+            </div>
+            <h2 className="text-xl font-bold">Correct</h2>
+          </div>
+          <div className="w-full bg-red-100 p-4">
             <p>{correctExplanation}</p>
           </div>
         </div>

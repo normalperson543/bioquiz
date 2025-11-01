@@ -1,35 +1,56 @@
 generator client {
   provider = "prisma-client-js"
 }
+
 datasource db {
-  provider  = "postgresql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model Quiz {
-  id        String     @id @unique
-  questions Question[]
-  owner     Profile    @relation(fields: [profileId], references: [id])
-  profileId String
+  id          String     @id @unique @default(uuid())
+  questions   Question[]
+  owner       Profile    @relation(fields: [profileId], references: [id])
+  profileId   String
+  description String
+  links       QuizLink[]
+}
+
+model QuizLink {
+  id          String  @id @unique @default(uuid())
+  type        Int
+  name        String
+  description String
+  quiz        Quiz?   @relation(fields: [quizId], references: [id])
+  quizId      String?
+}
+
+model Option {
+  id         String    @id @unique @default(uuid())
+  icon       Int?
+  name       String
+  Question   Question? @relation(fields: [questionId], references: [id])
+  questionId String?
 }
 
 model Question {
-  id                       String  @id @unique
-  quiz                     Quiz    @relation(fields: [quizId], references: [id])
-  questionName             String
-  option1Name              String
-  option2Name              String
-  option3Name              String?
-  option4Name              String?
-  correctAnswer            Int
+  id           String   @id @unique @default(uuid())
+  quiz         Quiz     @relation(fields: [quizId], references: [id])
+  questionName String
+  options      Option[]
+
+  correctAnswer            String
   correctAnswerExplanation String
   quizId                   String
 }
 
 model Profile {
-  id          String   @id @unique
-  username    String
-  dateCreated DateTime @default(now())
+  id             String   @id @unique @default(uuid())
+  username       String
+  firstName      String
+  lastName       String
+  profilePicture String?
+  dateCreated    DateTime @default(now())
   quizzes        Quiz[]
-  description String?
+  description    String?
 }
