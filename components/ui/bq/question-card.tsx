@@ -28,7 +28,7 @@ export default function QuestionCard({
 }) {
   const [selAnswer, setSelAnswer] = useState("");
 
-  console.log("boop", correctAnswer)
+  console.log("boop", correctAnswer);
 
   function handleSelectAnswer(optionId: string) {
     setSelAnswer(optionId);

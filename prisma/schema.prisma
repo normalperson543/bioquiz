@@ -56,9 +56,9 @@ model Profile {
   dateCreated    DateTime @default(now())
   quizzes        Quiz[]
   description    String?
-  email String
+  email String @default("you@example.com")
   password String?
-  usePasswordSignIn Boolean
+  usePasswordSignIn Boolean @default(true)
 
   answeredQuestions          Question[] @relation("answeredQuestions")
   answeredQuestionsCorrectly Question[] @relation("answeredQuestionsCorrectly")

@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
-import { Coming_Soon } from "next/font/google"
+import { Coming_Soon } from "next/font/google";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : "http://localhost:3000";
-
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
@@ -21,16 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning className="w-full h-full">
-      <body className="antialiased w-full h-full">
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          {children}
-        </ThemeProvider>
-      </body>
+      <body className="antialiased w-full h-full">{children}</body>
     </html>
   );
 }

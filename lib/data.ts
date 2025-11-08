@@ -1,4 +1,5 @@
 import { prisma } from "./db";
+
 export async function getQuiz(id: string) {
   return await prisma.quiz.findUnique({
     where: {
