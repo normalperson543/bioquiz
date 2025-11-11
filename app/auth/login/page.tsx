@@ -1,5 +1,5 @@
-import LoginUI from "@/components/ui/auth/login/login-ui";
+import { SignIn } from "@clerk/nextjs";
 
 export default function AuthLoginPage() {
-  return <LoginUI />;
+  return <SignIn />;
 }
