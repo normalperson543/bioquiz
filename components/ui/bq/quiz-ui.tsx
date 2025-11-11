@@ -8,7 +8,8 @@ import { QuizWithPublicInfo } from "@/lib/types";
 import QuizLink from "./quiz-link";
 import { linkTypes } from "@/lib/constants";
 import QuestionCard from "./question-card";
-import { MailIcon, PhoneIcon } from "lucide-react";
+import { GlobeLockIcon, MailIcon, PenIcon, PhoneIcon, PlusIcon, TrashIcon } from "lucide-react";
+import Button from "../button";
 
 export default function QuizPageUI({ quiz }: { quiz: QuizWithPublicInfo }) {
   console.log(quiz);
@@ -52,6 +53,24 @@ export default function QuizPageUI({ quiz }: { quiz: QuizWithPublicInfo }) {
               </QuizLink>
             ))}
         </div>
+      </div>
+      <div className="pt-4 pb-4 pl-12 pr-12 flex flex-row items-center gap-2 bg-orange-200">
+        <Button>
+          <PlusIcon width={16} height={16} />
+          Add question
+        </Button>
+        <Button>
+          <PenIcon width={16} height={16} />
+          Change info
+        </Button>
+        <Button>
+          <GlobeLockIcon width={16} height={16} />
+          Unpublish
+        </Button>
+        <Button>
+          <TrashIcon width={16} height={16} />
+          Delete
+        </Button>
       </div>
       <div className="p-8">
         {quiz.questions.map((question) => (
