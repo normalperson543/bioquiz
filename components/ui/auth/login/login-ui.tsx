@@ -1,7 +1,7 @@
 "use client";
 import { KeyIcon, LockIcon, MailIcon, UnlockIcon } from "lucide-react";
 import { useActionState, useState } from "react";
-import Button from "../button";
+import Button from "../../button";
 import { comingSoon } from "@/lib/fonts";
 import { signInWithCredentials } from "@/lib/actions";
 
@@ -9,7 +9,10 @@ export default function LoginUI() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const [error, formAction, isPending] = useActionState(signInWithCredentials, undefined)
+  const [error, formAction, isPending] = useActionState(
+    signInWithCredentials,
+    undefined
+  );
 
   return (
     <div

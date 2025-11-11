@@ -1,3 +1,6 @@
+'use server'
+
+import { register } from "module";
 import { AuthError } from "next-auth";
 import { signIn } from "next-auth/react";
 import { revalidatePath } from "next/cache";
@@ -21,6 +24,18 @@ export async function signInWithCredentials(prevState: string | undefined, formD
     else {
       revalidatePath("/")
       redirect("/")
+    }
+  }
+}
+export async function signUp(prevState: string | undefined, formData: FormData) {
+  try {
+    await register(formData);
+    redirect("/auth/login")
+  }
+  catch (e) {
+    if (e instanceof Error) {
+      if (e.message === "NEXT_REDIRECT") redirect("/auth/login")
+        return e.message
     }
   }
 }
