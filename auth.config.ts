@@ -27,43 +27,10 @@ export async function getUserFromDb(email: string, password: string) {
   }
 }
 
-async function saltAndHashPw(pw: string) {
+export async function saltAndHashPw(pw: string) {
   const saltRounds = 10;
   const hashed = await bcryptjs.hash(pw, saltRounds);
   return hashed;
-}
-
-export async function register(formData: FormData) {
-  const email = formData.get("username") as string;
-  const password = formData.get("password") as string;
-  const firstName = formData.get("firstName") as string;
-  const lastName = formData.get("lastName") as string;
-  const username = formData.get("username") as string;
-
-  const hashed = await saltAndHashPw(password);
-  const userCount = await prisma.profile.count({
-    where: {
-      username: username,
-    },
-  });
-  if (userCount > 0) {
-    throw new Error("Whoops, this user already exists! Please try to log in.");
-  }
-  try {
-    const user = await prisma.profile.create({
-      data: {
-        username: username,
-        email: email,
-        firstName: firstName,
-        lastName: lastName,
-        password: hashed,
-        usePasswordSignIn: false,
-      },
-    });
-    return user;
-  } catch {
-    throw new Error("Whoops, there was a problem creating your account.");
-  }
 }
 export default {
   pages: {

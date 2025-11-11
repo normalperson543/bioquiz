@@ -50,8 +50,6 @@ model Question {
 model Profile {
   id             String   @id @unique @default(uuid())
   username       String
-  firstName      String
-  lastName       String
   profilePicture String?
   dateCreated    DateTime @default(now())
   quizzes        Quiz[]

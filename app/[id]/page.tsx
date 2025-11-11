@@ -6,7 +6,7 @@ export default async function QuizPage({
   params,
 }: {
   params: Promise<{ id: string }>;
-}): Promise<Metadata> {
+}): Promise<Metadata> { 
   const { id } = await params;
 
   const quiz = await getQuiz(id);

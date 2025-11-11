@@ -6,16 +6,17 @@ import {
   MailIcon,
   TriangleAlertIcon,
   UnlockIcon,
+  UserIcon,
   UserPlusIcon,
 } from "lucide-react";
 import { useActionState, useState } from "react";
 import Button from "../../button";
 import { comingSoon } from "@/lib/fonts";
-import { signInWithCredentials } from "@/lib/actions";
-import { register } from "@/auth.config";
+import { signInWithCredentials, register } from "@/lib/actions";
 
 export default function SignUpUI() {
   const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, formAction, isPending] = useActionState(register, undefined);
@@ -35,6 +36,19 @@ export default function SignUpUI() {
         <p>want to create your own quizzes?</p>
         <form action={formAction}>
           <div className="flex flex-col gap-2 bg-pink-50 p-4 rounded-sm border-pink-100 border-2">
+            <div className="flex flex-row gap-3 items-center">
+              <div className="p-2 bg-pink-200 rounded-full">
+                <UserIcon width={16} height={16} />
+              </div>
+              <label className="font-bold">Username</label>
+            </div>
+            <input
+              type="text"
+              onChange={(e) => setUsername(e.target.value)}
+              value={username}
+              name="username"
+              className="border-2 bg-pink-100 border-pink-200 rounded-sm p-2"
+            />
             <div className="flex flex-row gap-3 items-center">
               <div className="p-2 bg-pink-200 rounded-full">
                 <MailIcon width={16} height={16} />
@@ -73,7 +87,6 @@ export default function SignUpUI() {
               type="password"
               onChange={(e) => setConfirmPassword(e.target.value)}
               value={confirmPassword}
-              name="password"
               className="border-2 bg-pink-100 border-pink-200 rounded-sm p-2"
             />
             {confirmPassword.length > 0 && confirmPassword !== password && (
