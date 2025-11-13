@@ -8,11 +8,22 @@ import { QuizWithPublicInfo } from "@/lib/types";
 import QuizLink from "./quiz-link";
 import { linkTypes } from "@/lib/constants";
 import QuestionCard from "./question-card";
-import { GlobeLockIcon, MailIcon, PenIcon, PhoneIcon, PlusIcon, TrashIcon } from "lucide-react";
+import {
+  GlobeLockIcon,
+  MailIcon,
+  PenIcon,
+  PhoneIcon,
+  PlusIcon,
+  TrashIcon,
+} from "lucide-react";
 import Button from "../button";
+import { useState } from "react";
+import Overlay from "../overlay";
+import Modal from "../modal";
 
 export default function QuizPageUI({ quiz }: { quiz: QuizWithPublicInfo }) {
   console.log(quiz);
+  const [showAddQuestionUI, setShowAddQuestionUI] = useState(false);
   return (
     <div
       className={`w-full h-full bg-pink-50 text-black ${comingSoon.className}`}
@@ -32,12 +43,7 @@ export default function QuizPageUI({ quiz }: { quiz: QuizWithPublicInfo }) {
             className="rounded-sm"
           />
           <div className="flex flex-col gap-2 text-black">
-            <h2 className="text-4xl">
-              <span className="font-bold">
-                {quiz.owner.firstName} {quiz.owner.lastName}
-              </span>{" "}
-              (@{quiz.owner.username})
-            </h2>
+            <h2 className="text-4xl">@{quiz.owner.username}</h2>
             <p>{quiz.description}</p>
           </div>
         </div>
@@ -55,7 +61,7 @@ export default function QuizPageUI({ quiz }: { quiz: QuizWithPublicInfo }) {
         </div>
       </div>
       <div className="pt-4 pb-4 pl-12 pr-12 flex flex-row items-center gap-2 bg-orange-200">
-        <Button>
+        <Button onClick={() => setShowAddQuestionUI(true)}>
           <PlusIcon width={16} height={16} />
           Add question
         </Button>
@@ -107,6 +113,11 @@ export default function QuizPageUI({ quiz }: { quiz: QuizWithPublicInfo }) {
         </div>
         <p>Create your own BioQuiz</p>
       </div>
+      {showAddQuestionUI && (
+        <Overlay>
+          <Modal>Hello</Modal>
+        </Overlay>
+      )}
     </div>
   );
 }
