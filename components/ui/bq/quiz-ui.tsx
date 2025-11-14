@@ -3,7 +3,7 @@
 import { comingSoon } from "@/lib/fonts";
 import { DynamicIcon } from "lucide-react/dynamic";
 import Image from "next/image";
-import { Profile, Quiz } from "@prisma/client";
+import { Option, Profile, Quiz } from "@prisma/client";
 import { QuizWithPublicInfo } from "@/lib/types";
 import QuizLink from "./quiz-link";
 import { linkTypes } from "@/lib/constants";
@@ -14,16 +14,51 @@ import {
   PenIcon,
   PhoneIcon,
   PlusIcon,
+  TextCursorIcon,
   TrashIcon,
 } from "lucide-react";
 import Button from "../button";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Overlay from "../overlay";
 import Modal from "../modal";
-
+import Input from "../input";
+import EditableOption from "./editable-option";
+import { v4 } from "uuid";
 export default function QuizPageUI({ quiz }: { quiz: QuizWithPublicInfo }) {
   console.log(quiz);
   const [showAddQuestionUI, setShowAddQuestionUI] = useState(false);
+  const [questionName, setQuestionName] = useState("");
+  const [options, setOptions] = useState<Option[]>([]);
+  const editingQuestion = useRef("");
+
+  function handleOptionTextChanged(id: string, newName: string) {
+    const nextOptions = options.map((option) => {
+      if (option.id === id) {
+        return {
+          ...option,
+          name: newName,
+        };
+      } else {
+        return option;
+      }
+    });
+    setOptions(nextOptions);
+  }
+  function handleAddOption() {
+    setOptions([
+      ...options,
+      {
+        id: v4(),
+        name: "An option?",
+        questionId: editingQuestion.current,
+        icon: 0,
+      },
+    ]);
+  }
+  function handleAddQuestion() {
+    setShowAddQuestionUI(true);
+    editingQuestion.current = v4();
+  }
   return (
     <div
       className={`w-full h-full bg-pink-50 text-black ${comingSoon.className}`}
@@ -37,7 +72,7 @@ export default function QuizPageUI({ quiz }: { quiz: QuizWithPublicInfo }) {
                 quiz.owner.username
               )}`
             }
-            alt={`${quiz.owner.firstName} ${quiz.owner.lastName}'s profile picture`}
+            alt={`${quiz.owner.username}'s profile picture`}
             width={60}
             height={60}
             className="rounded-sm"
@@ -61,7 +96,7 @@ export default function QuizPageUI({ quiz }: { quiz: QuizWithPublicInfo }) {
         </div>
       </div>
       <div className="pt-4 pb-4 pl-12 pr-12 flex flex-row items-center gap-2 bg-orange-200">
-        <Button onClick={() => setShowAddQuestionUI(true)}>
+        <Button onClick={handleAddQuestion}>
           <PlusIcon width={16} height={16} />
           Add question
         </Button>
@@ -115,7 +150,40 @@ export default function QuizPageUI({ quiz }: { quiz: QuizWithPublicInfo }) {
       </div>
       {showAddQuestionUI && (
         <Overlay>
-          <Modal>Hello</Modal>
+          <Modal
+            header={
+              <div>
+                <h2 className="text-2xl font-bold">Add a question</h2>
+              </div>
+            }
+          >
+            <Input
+              icon={<TextCursorIcon width={16} height={16} />}
+              onChange={(e) => setQuestionName(e.target.value)}
+              value={questionName}
+              label="Question name"
+            />
+            <div className="flex flex-row gap-2">
+              <div className="flex flex-col gap-2 flex-1">
+                <h3 className="text-xl font-bold">Options</h3>
+                <p>We recommend you pick 3 options.</p>
+              </div>
+              <div className="flex flex-row gap-2">
+                <Button onClick={handleAddOption}>
+                  <PlusIcon width={16} height={16} />
+                  Add
+                </Button>
+              </div>
+            </div>
+            {options.map((option) => (
+              <EditableOption
+                onChangeOptionText={(e) =>
+                  handleOptionTextChanged(option.id, e.target.value)
+                }
+                optionText={option.name}
+              />
+            ))}
+          </Modal>
         </Overlay>
       )}
     </div>
