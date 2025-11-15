@@ -26,7 +26,7 @@ import Modal from "../modal";
 import Input from "../input";
 import EditableOption from "./editable-option";
 import { v4 } from "uuid";
-import { addQuestion } from "@/lib/actions";
+import { addQuestion, updateQuestion } from "@/lib/actions";
 import Link from "next/link";
 export default function QuizPageUI({
   quiz: quizDb,
@@ -79,6 +79,33 @@ export default function QuizPageUI({
     setOptions(options.filter((option) => option.id !== id));
   }
   async function handleFinishQuestion() {
+    if (isEditingExistingQuestion) {
+      const question = await updateQuestion(
+        editingQuestion.current,
+        questionName,
+        options,
+        editingCorrectAnswer,
+        correctAnswerExplanation,
+        quiz.id
+      );
+      if (!question) {
+        console.error("whoops");
+        return;
+      }
+      const nextQuestions = quiz.questions.map((q) => {
+        if (q.id === editingQuestion.current) {
+          return question;
+        } else {
+          return q;
+        }
+      });
+      setQuiz({
+        ...quiz,
+        questions: nextQuestions,
+      });
+      handleCloseQuestionModal();
+      return;
+    }
     const question = await addQuestion(
       editingQuestion.current,
       questionName,
@@ -122,7 +149,13 @@ export default function QuizPageUI({
     setOptions(nextOptions);
   }
   function handleEditQuestion(index: number) {
-    setQuestionName(quiz.questions[index].questionName)
+    setQuestionName(quiz.questions[index].questionName);
+    editingQuestion.current = quiz.questions[index].id;
+    setOptions(quiz.questions[index].options);
+    setEditingCorrectAnswer(quiz.questions[index].correctAnswer);
+    setCorrectAnswerExplanation(quiz.questions[index].correctAnswerExplanation);
+    setIsEditingExistingQuestion(true);
+    setShowAddQuestionUI(true);
   }
   return (
     <div
@@ -185,13 +218,14 @@ export default function QuizPageUI({
         </Button>
       </div>
       <div className="p-8 flex flex-col gap-6">
-        {quiz.questions.map((question) => (
+        {quiz.questions.map((question, i) => (
           <QuestionCard
             number={quiz.questions.findIndex((q) => q.id === question.id) + 1}
             questionName={question.questionName}
             options={question.options} //golly we need to find a better way to do this
             correctAnswer={question.correctAnswer}
             correctExplanation={question.correctAnswerExplanation}
+            onEdit={() => handleEditQuestion(i)}
           />
         ))}
       </div>

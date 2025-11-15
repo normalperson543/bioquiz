@@ -14,7 +14,7 @@ model Quiz {
   profileId   String
   description String
   links       QuizLink[]
-  title       String @default("Your quiz title")
+  title       String     @default("Your quiz title")
 }
 
 model QuizLink {
@@ -42,6 +42,7 @@ model Question {
   options           Option[]
   answered          Profile[] @relation("answeredQuestions")
   answeredCorrectly Profile[] @relation("answeredQuestionsCorrectly")
+  dateCreated       DateTime?
 
   correctAnswer            String
   correctAnswerExplanation String

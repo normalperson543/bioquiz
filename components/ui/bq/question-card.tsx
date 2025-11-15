@@ -2,12 +2,14 @@ import {
   CheckIcon,
   MessageCircleQuestion,
   MessageSquareIcon,
+  PencilIcon,
   XIcon,
 } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import { Option } from "@prisma/client";
 import { icons } from "@/lib/constants";
+import Button from "../button";
 
 export default function QuestionCard({
   number,
@@ -17,7 +19,8 @@ export default function QuestionCard({
   correctExplanation,
   lockedFromAnsweringDb,
   comments,
-  handleAnswer
+  handleAnswer,
+  onEdit,
 }: {
   number: number;
   questionName: string;
@@ -26,24 +29,33 @@ export default function QuestionCard({
   correctExplanation: string;
   comments?: null;
   lockedFromAnsweringDb: boolean;
-  handleAnswer: (answer: string) => void
+  handleAnswer: (answer: string) => void;
+  onEdit: () => void;
 }) {
   const [selAnswer, setSelAnswer] = useState("");
 
   console.log("boop", correctAnswer);
 
   function handleSelectAnswer(optionId: string) {
-    handleAnswer(optionId)
+    handleAnswer(optionId);
     setSelAnswer(optionId);
   }
 
   return (
-    <div className="w-full rounded-sm bg-pink-100 shadow-md shadow-pink-200">
+    <div className="w-full rounded-sm bg-pink-100">
       <div className="w-full rounded-t-sm p-4 bg-pink-200 flex flex-row gap-4 items-center">
-        <div className="rounded-full bg-pink-300 p-2">
-          <MessageCircleQuestion width={16} height={16} />
+        <div className="flex flex-row gap-2 flex-1">
+          <div className="rounded-full bg-pink-300 p-2">
+            <MessageCircleQuestion width={16} height={16} />
+          </div>
+          <h2 className="text-xl">Question {number}</h2>
         </div>
-        <h2 className="text-xl">Question {number}</h2>
+        <div className="flex flex-row gap-2">
+          <Button onClick={onEdit}>
+            <PencilIcon width={16} height={16} />
+            Edit
+          </Button>
+        </div>
       </div>
       <div className="p-4 flex flex-col gap-2">
         <div className="w-full flex flex-col gap-2">
