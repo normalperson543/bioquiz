@@ -27,7 +27,12 @@ import Input from "../input";
 import EditableOption from "./editable-option";
 import { v4 } from "uuid";
 import addQuestion from "@/lib/actions";
-export default function QuizPageUI({ quiz: quizDb }: { quiz: QuizWithPublicInfo }) {
+import Link from "next/link";
+export default function QuizPageUI({
+  quiz: quizDb,
+}: {
+  quiz: QuizWithPublicInfo;
+}) {
   const [quiz, setQuiz] = useState(quizDb);
   const [showAddQuestionUI, setShowAddQuestionUI] = useState(false);
   const [questionName, setQuestionName] = useState("");
@@ -79,14 +84,15 @@ export default function QuizPageUI({ quiz: quizDb }: { quiz: QuizWithPublicInfo 
       correctAnswerExplanation,
       quiz.id
     );
+    if (!question) {
+      console.error("whoops");
+      return;
+    }
     setQuiz({
       ...quiz,
-      questions: [
-        ...quiz.questions,
-        question
-      ]
-    })
-    setShowAddQuestionUI(false)
+      questions: [...quiz.questions, question],
+    });
+    handleCloseQuestionModal();
   }
   function handleToggleCorrectAnswer(id: string) {
     setEditingCorrectAnswer(id);
@@ -96,6 +102,8 @@ export default function QuizPageUI({ quiz: quizDb }: { quiz: QuizWithPublicInfo 
     setCorrectAnswerExplanation("");
     setOptions([]);
     setShowAddQuestionUI(false);
+    setEditingCorrectAnswer("");
+    editingQuestion.current = "";
   }
   return (
     <div
@@ -116,8 +124,14 @@ export default function QuizPageUI({ quiz: quizDb }: { quiz: QuizWithPublicInfo 
             className="rounded-sm"
           />
           <div className="flex flex-col gap-2 text-black">
-            <h2 className="text-4xl">@{quiz.owner.username}</h2>
-            <p>{quiz.description}</p>
+            <h2 className="text-4xl">{quiz.title}</h2>
+            <p>
+              by{" "}
+              <Link href={`/profile/${quiz.owner.username}`}>
+                @{quiz.owner.username}
+              </Link>
+              {quiz.description}
+            </p>
           </div>
         </div>
         <div className="flex flex-row gap-4 items-center">

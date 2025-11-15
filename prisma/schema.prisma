@@ -14,6 +14,7 @@ model Quiz {
   profileId   String
   description String
   links       QuizLink[]
+  title       String @default("Your quiz title")
 }
 
 model QuizLink {
@@ -48,15 +49,15 @@ model Question {
 }
 
 model Profile {
-  id             String   @id @unique @default(uuid())
-  username       String
-  profilePicture String?
-  dateCreated    DateTime @default(now())
-  quizzes        Quiz[]
-  description    String?
-  email String @default("you@example.com")
-  password String?
-  usePasswordSignIn Boolean @default(true)
+  id                String   @id @unique @default(uuid())
+  username          String
+  profilePicture    String?
+  dateCreated       DateTime @default(now())
+  quizzes           Quiz[]
+  description       String?
+  email             String   @default("you@example.com")
+  password          String?
+  usePasswordSignIn Boolean  @default(true)
 
   answeredQuestions          Question[] @relation("answeredQuestions")
   answeredQuestionsCorrectly Question[] @relation("answeredQuestionsCorrectly")
