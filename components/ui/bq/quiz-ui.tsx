@@ -9,6 +9,7 @@ import QuizLink from "./quiz-link";
 import { linkTypes } from "@/lib/constants";
 import QuestionCard from "./question-card";
 import {
+  CheckIcon,
   GlobeLockIcon,
   MailIcon,
   PenIcon,
@@ -16,6 +17,7 @@ import {
   PlusIcon,
   TextCursorIcon,
   TrashIcon,
+  XIcon,
 } from "lucide-react";
 import Button from "../button";
 import { useRef, useState } from "react";
@@ -58,6 +60,16 @@ export default function QuizPageUI({ quiz }: { quiz: QuizWithPublicInfo }) {
   function handleAddQuestion() {
     setShowAddQuestionUI(true);
     editingQuestion.current = v4();
+  }
+  function handleDeleteQuestion(id: string) {
+    console.log("test");
+    console.log(options);
+    console.log(id);
+    setOptions(options.filter((option) => option.id !== id));
+  }
+  function handleCloseQuestionModal() {
+    setOptions([]);
+    setShowAddQuestionUI(false);
   }
   return (
     <div
@@ -152,8 +164,14 @@ export default function QuizPageUI({ quiz }: { quiz: QuizWithPublicInfo }) {
         <Overlay>
           <Modal
             header={
-              <div>
-                <h2 className="text-2xl font-bold">Add a question</h2>
+              <div className="flex flex-row gap-2 items-center">
+                <div className="flex flex-col gap-2 flex-1">
+                  <h2 className="text-2xl font-bold">Add a question</h2>
+                  <p>what do you want to ask?</p>
+                </div>
+                <Button onClick={handleCloseQuestionModal}>
+                  <XIcon width={16} height={16} />
+                </Button>
               </div>
             }
           >
@@ -163,11 +181,26 @@ export default function QuizPageUI({ quiz }: { quiz: QuizWithPublicInfo }) {
               value={questionName}
               label="Question name"
             />
-            <div className="flex flex-row gap-2">
+            <div className="flex flex-row gap-2 items-center">
               <div className="flex flex-col gap-2 flex-1">
                 <h3 className="text-xl font-bold">Options</h3>
-                <p>We recommend you pick 3 options.</p>
+                <p>Pick a minumum of 2 options, max 5 options.</p>
               </div>
+              {options.length < 2 && (
+                <div className="p-1 rounded-xl bg-orange-200 flex-shrink">
+                  {options.length}/2
+                </div>
+              )}
+              {options.length >= 2 && options.length <= 5 && (
+                <div className="p-1 rounded-xl bg-green-200 flex-shrink">
+                  {options.length}/5
+                </div>
+              )}
+              {options.length > 5 && (
+                <div className="p-1 rounded-xl bg-red-200 flex-shrink">
+                  {options.length}/5
+                </div>
+              )}
               <div className="flex flex-row gap-2">
                 <Button onClick={handleAddOption}>
                   <PlusIcon width={16} height={16} />
@@ -181,8 +214,13 @@ export default function QuizPageUI({ quiz }: { quiz: QuizWithPublicInfo }) {
                   handleOptionTextChanged(option.id, e.target.value)
                 }
                 optionText={option.name}
+                onDelete={() => handleDeleteQuestion(option.id)}
               />
             ))}
+            <Button>
+              <CheckIcon width={16} height={16} />
+              Finish
+            </Button>
           </Modal>
         </Overlay>
       )}
