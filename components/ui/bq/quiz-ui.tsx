@@ -32,6 +32,7 @@ export default function QuizPageUI({ quiz }: { quiz: QuizWithPublicInfo }) {
   const [questionName, setQuestionName] = useState("");
   const [options, setOptions] = useState<Option[]>([]);
   const editingQuestion = useRef("");
+  const [editingCorrectAnswer, setEditingCorrectAnswer] = useState("");
 
   function handleOptionTextChanged(id: string, newName: string) {
     const nextOptions = options.map((option) => {
@@ -67,7 +68,12 @@ export default function QuizPageUI({ quiz }: { quiz: QuizWithPublicInfo }) {
     console.log(id);
     setOptions(options.filter((option) => option.id !== id));
   }
+  function handleFinishQuestion() {}
+  function handleToggleCorrectAnswer(id: string) {
+    setEditingCorrectAnswer(id)
+  }
   function handleCloseQuestionModal() {
+    setQuestionName("");
     setOptions([]);
     setShowAddQuestionUI(false);
   }
@@ -215,6 +221,10 @@ export default function QuizPageUI({ quiz }: { quiz: QuizWithPublicInfo }) {
                 }
                 optionText={option.name}
                 onDelete={() => handleDeleteQuestion(option.id)}
+                isCorrectAnswer={editingCorrectAnswer !== option.id}
+                onToggleCorrectAnswer={() =>
+                  handleToggleCorrectAnswer(option.id)
+                }
               />
             ))}
             <Button>

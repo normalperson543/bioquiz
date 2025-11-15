@@ -2,7 +2,7 @@
 
 import { ChangeEvent } from "react";
 import Button from "../button";
-import { XIcon } from "lucide-react";
+import { CheckIcon, TrashIcon, XIcon } from "lucide-react";
 import { icons } from "@/lib/constants";
 
 export default function EditableOption({
@@ -11,12 +11,16 @@ export default function EditableOption({
   optionText,
   icon,
   onChangeIcon,
+  isCorrectAnswer,
+  onToggleCorrectAnswer,
 }: {
   onChangeOptionText: (e: ChangeEvent<HTMLInputElement>) => void;
   optionText: string;
   onDelete: () => void;
   icon: number;
   onChangeIcon: (e: ChangeEvent<HTMLSelectElement>) => void;
+  isCorrectAnswer: boolean;
+  onToggleCorrectAnswer;
 }) {
   return (
     <div className="flex flex-row gap-2 border-2 border-pink-100 bg-pink-50 p-2">
@@ -26,7 +30,9 @@ export default function EditableOption({
         value={icon}
       >
         {icons.map((icon, i) => (
-          <option value={i} key={i}>{icon}</option>
+          <option value={i} key={i}>
+            {icon}
+          </option>
         ))}
       </select>
       <input
@@ -35,8 +41,17 @@ export default function EditableOption({
         value={optionText}
         onChange={onChangeOptionText}
       />
+      {isCorrectAnswer ? (
+        <Button onClick={onToggleCorrectAnswer}>
+          <XIcon width={16} height={16} />
+        </Button>
+      ) : (
+        <Button onClick={onToggleCorrectAnswer}>
+          <CheckIcon width={16} height={16} />
+        </Button>
+      )}
       <Button onClick={onDelete}>
-        <XIcon width={16} height={16} />
+        <TrashIcon width={16} height={16} />
       </Button>
     </div>
   );
