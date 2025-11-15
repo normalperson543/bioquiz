@@ -17,6 +17,7 @@ export default function QuestionCard({
   correctExplanation,
   lockedFromAnsweringDb,
   comments,
+  handleAnswer
 }: {
   number: number;
   questionName: string;
@@ -25,12 +26,14 @@ export default function QuestionCard({
   correctExplanation: string;
   comments?: null;
   lockedFromAnsweringDb: boolean;
+  handleAnswer: (answer: string) => void
 }) {
   const [selAnswer, setSelAnswer] = useState("");
 
   console.log("boop", correctAnswer);
 
   function handleSelectAnswer(optionId: string) {
+    handleAnswer(optionId)
     setSelAnswer(optionId);
   }
 
@@ -52,8 +55,8 @@ export default function QuestionCard({
             onClick={() => handleSelectAnswer(option.id)}
           >
             <div className="bg-pink-400 p-1 w-8 h-8 rounded-full">
-              {option.icon && icons[option.icon]}
-            </div>{" "}
+              {icons[Number(option.icon ?? 0)]}
+            </div>
             <b>{option.name}</b>
           </button>
         ))}
@@ -66,9 +69,11 @@ export default function QuestionCard({
             </div>
             <h2 className="text-xl font-bold">Correct</h2>
           </div>
-          <div className="w-full bg-green-100 p-4">
-            <p>{correctExplanation}</p>
-          </div>
+          {correctExplanation && (
+            <div className="w-full bg-green-100 p-4">
+              <p>{correctExplanation}</p>
+            </div>
+          )}
         </div>
       )}
       {selAnswer !== "" && selAnswer !== correctAnswer && (
@@ -79,9 +84,11 @@ export default function QuestionCard({
             </div>
             <h2 className="text-xl font-bold">Incorrect</h2>
           </div>
-          <div className="w-full bg-red-100 p-4">
-            <p>{correctExplanation}</p>
-          </div>
+          {correctExplanation && (
+            <div className="w-full bg-red-100 p-4">
+              <p>{correctExplanation}</p>
+            </div>
+          )}
         </div>
       )}
       <div className="w-full flex flex-col gap-2 p-4">

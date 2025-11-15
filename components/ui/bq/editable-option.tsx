@@ -20,7 +20,8 @@ export default function EditableOption({
   icon: number;
   onChangeIcon: (e: ChangeEvent<HTMLSelectElement>) => void;
   isCorrectAnswer: boolean;
-  onToggleCorrectAnswer;
+  onToggleCorrectAnswer: () => void;
+  
 }) {
   return (
     <div className="flex flex-row gap-2 border-2 border-pink-100 bg-pink-50 p-2">

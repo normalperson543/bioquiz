@@ -26,7 +26,7 @@ import Modal from "../modal";
 import Input from "../input";
 import EditableOption from "./editable-option";
 import { v4 } from "uuid";
-import addQuestion from "@/lib/actions";
+import { addQuestion } from "@/lib/actions";
 import Link from "next/link";
 export default function QuizPageUI({
   quiz: quizDb,
@@ -40,6 +40,8 @@ export default function QuizPageUI({
   const editingQuestion = useRef("");
   const [editingCorrectAnswer, setEditingCorrectAnswer] = useState("");
   const [correctAnswerExplanation, setCorrectAnswerExplanation] = useState("");
+  const [isEditingExistingQuestion, setIsEditingExistingQuestion] =
+    useState(false);
 
   function handleOptionTextChanged(id: string, newName: string) {
     const nextOptions = options.map((option) => {
@@ -66,6 +68,7 @@ export default function QuizPageUI({
     ]);
   }
   function handleAddQuestion() {
+    setIsEditingExistingQuestion(false);
     setShowAddQuestionUI(true);
     editingQuestion.current = v4();
   }
@@ -105,6 +108,22 @@ export default function QuizPageUI({
     setEditingCorrectAnswer("");
     editingQuestion.current = "";
   }
+  function handleChangeIcon(id: string, newIcon: number) {
+    const nextOptions = options.map((option) => {
+      if (option.id === id) {
+        return {
+          ...option,
+          icon: newIcon,
+        };
+      } else {
+        return option;
+      }
+    });
+    setOptions(nextOptions);
+  }
+  function handleEditQuestion(index: number) {
+    setQuestionName(quiz.questions[index].questionName)
+  }
   return (
     <div
       className={`w-full h-full bg-pink-50 text-black ${comingSoon.className}`}
@@ -128,7 +147,7 @@ export default function QuizPageUI({
             <p>
               by{" "}
               <Link href={`/profile/${quiz.owner.username}`}>
-                @{quiz.owner.username}
+                @{quiz.owner.username} -{" "}
               </Link>
               {quiz.description}
             </p>
@@ -178,7 +197,7 @@ export default function QuizPageUI({
       </div>
       <div className="w-full bg-pink-100 p-8 flex flex-col gap-2">
         <h2 className="text-2xl">
-          This is the end of {quiz.owner.firstName}'s BioQuiz
+          This is the end of {quiz.owner.username}'s BioQuiz
         </h2>
         <div className="flex flex-row gap-2">
           <div className="rounded-2xl flex flex-row gap-2 bg-pink-200 self-start w-fit">
@@ -206,8 +225,17 @@ export default function QuizPageUI({
             header={
               <div className="flex flex-row gap-2 items-center">
                 <div className="flex flex-col gap-2 flex-1">
-                  <h2 className="text-2xl font-bold">Add a question</h2>
-                  <p>what do you want to ask?</p>
+                  {editingQuestion ? (
+                    <>
+                      <h2 className="text-2xl font-bold">Editing question</h2>
+                      <p>want to change things up?</p>
+                    </>
+                  ) : (
+                    <>
+                      <h2 className="text-2xl font-bold">Add a question</h2>
+                      <p>what do you want to ask?</p>
+                    </>
+                  )}
                 </div>
                 <Button onClick={handleCloseQuestionModal}>
                   <XIcon width={16} height={16} />
@@ -260,6 +288,9 @@ export default function QuizPageUI({
                 onToggleCorrectAnswer={() =>
                   handleToggleCorrectAnswer(option.id)
                 }
+                onChangeIcon={(e) =>
+                  handleChangeIcon(option.id, Number(e.target.value))
+                }
               />
             ))}
             <Input
@@ -268,10 +299,15 @@ export default function QuizPageUI({
               value={correctAnswerExplanation}
               label="Correct answer explanation"
             />
-            <Button onClick={handleFinishQuestion}>
-              <CheckIcon width={16} height={16} />
-              Finish
-            </Button>
+            {questionName.length > 0 &&
+              options.length >= 2 &&
+              options.length <= 5 &&
+              editingCorrectAnswer.length > 0 && (
+                <Button onClick={handleFinishQuestion}>
+                  <CheckIcon width={16} height={16} />
+                  Finish
+                </Button>
+              )}
           </Modal>
         </Overlay>
       )}

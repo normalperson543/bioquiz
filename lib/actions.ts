@@ -3,7 +3,7 @@
 import { Option } from "@prisma/client";
 import { prisma } from "./db";
 
-export default async function addQuestion(
+export async function addQuestion(
   questionId: string,
   questionName: string,
   options: Option[],
@@ -34,4 +34,7 @@ export default async function addQuestion(
   })
   
   return question
+}
+export async function markAnswered(questionId: string) {
+  
 }
