@@ -26,13 +26,15 @@ import Modal from "../modal";
 import Input from "../input";
 import EditableOption from "./editable-option";
 import { v4 } from "uuid";
-export default function QuizPageUI({ quiz }: { quiz: QuizWithPublicInfo }) {
-  console.log(quiz);
+import addQuestion from "@/lib/actions";
+export default function QuizPageUI({ quiz: quizDb }: { quiz: QuizWithPublicInfo }) {
+  const [quiz, setQuiz] = useState(quizDb);
   const [showAddQuestionUI, setShowAddQuestionUI] = useState(false);
   const [questionName, setQuestionName] = useState("");
   const [options, setOptions] = useState<Option[]>([]);
   const editingQuestion = useRef("");
   const [editingCorrectAnswer, setEditingCorrectAnswer] = useState("");
+  const [correctAnswerExplanation, setCorrectAnswerExplanation] = useState("");
 
   function handleOptionTextChanged(id: string, newName: string) {
     const nextOptions = options.map((option) => {
@@ -68,12 +70,30 @@ export default function QuizPageUI({ quiz }: { quiz: QuizWithPublicInfo }) {
     console.log(id);
     setOptions(options.filter((option) => option.id !== id));
   }
-  function handleFinishQuestion() {}
+  async function handleFinishQuestion() {
+    const question = await addQuestion(
+      editingQuestion.current,
+      questionName,
+      options,
+      editingCorrectAnswer,
+      correctAnswerExplanation,
+      quiz.id
+    );
+    setQuiz({
+      ...quiz,
+      questions: [
+        ...quiz.questions,
+        question
+      ]
+    })
+    setShowAddQuestionUI(false)
+  }
   function handleToggleCorrectAnswer(id: string) {
-    setEditingCorrectAnswer(id)
+    setEditingCorrectAnswer(id);
   }
   function handleCloseQuestionModal() {
     setQuestionName("");
+    setCorrectAnswerExplanation("");
     setOptions([]);
     setShowAddQuestionUI(false);
   }
@@ -131,7 +151,7 @@ export default function QuizPageUI({ quiz }: { quiz: QuizWithPublicInfo }) {
           Delete
         </Button>
       </div>
-      <div className="p-8">
+      <div className="p-8 flex flex-col gap-6">
         {quiz.questions.map((question) => (
           <QuestionCard
             number={quiz.questions.findIndex((q) => q.id === question.id) + 1}
@@ -207,6 +227,7 @@ export default function QuizPageUI({ quiz }: { quiz: QuizWithPublicInfo }) {
                   {options.length}/5
                 </div>
               )}
+
               <div className="flex flex-row gap-2">
                 <Button onClick={handleAddOption}>
                   <PlusIcon width={16} height={16} />
@@ -227,7 +248,13 @@ export default function QuizPageUI({ quiz }: { quiz: QuizWithPublicInfo }) {
                 }
               />
             ))}
-            <Button>
+            <Input
+              icon={<CheckIcon width={16} height={16} />}
+              onChange={(e) => setCorrectAnswerExplanation(e.target.value)}
+              value={correctAnswerExplanation}
+              label="Correct answer explanation"
+            />
+            <Button onClick={handleFinishQuestion}>
               <CheckIcon width={16} height={16} />
               Finish
             </Button>

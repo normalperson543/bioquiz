@@ -6,15 +6,32 @@ import { prisma } from "./db";
 export default async function addQuestion(
   questionId: string,
   questionName: string,
-  options: Option[]
+  options: Option[],
+  correctAnswer: string,
+  correctAnswerExplanation: string,
+  quizId: string
 ) {
-  const newOptions = await prisma.option.createMany({
-    data: options,
-  });
-  const question = await prisma.question.create({
+  console.log(options)
+  await prisma.question.create({
     data: {
       id: questionId,
       questionName: questionName,
-    },
+      correctAnswer: correctAnswer,
+      correctAnswerExplanation: correctAnswerExplanation,
+      quizId: quizId
+    }
   });
+  await prisma.option.createMany({
+    data: options,
+  });
+  const question = await prisma.question.findUnique({
+    where: {
+      id: questionId,
+    },
+    include: {
+      options: true
+    }
+  })
+  
+  return question
 }
