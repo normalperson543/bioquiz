@@ -6,14 +6,13 @@ const isPublicRoute = createRouteMatcher(["/auth/login(.*)"]);
 export default clerkMiddleware(async (auth, req) => {
   const { isAuthenticated, sessionClaims } = await auth();
   if (isAuthenticated) {
-    console.log("Upserting")
-    console.log(sessionClaims)
-    prisma.profile.upsert({
+    await prisma.profile.upsert({
       where: {
         id: sessionClaims.userId as string,
       },
       update: {},
       create: {
+        id: sessionClaims.userId as string,
         username: sessionClaims.username
       }
     });
