@@ -26,7 +26,7 @@ import Modal from "../modal";
 import Input from "../input";
 import EditableOption from "./editable-option";
 import { v4 } from "uuid";
-import { addQuestion, updateQuestion } from "@/lib/actions";
+import { addQuestion, markAnswered, updateQuestion } from "@/lib/actions";
 import Link from "next/link";
 export default function QuizPageUI({
   quiz: quizDb,
@@ -157,6 +157,9 @@ export default function QuizPageUI({
     setIsEditingExistingQuestion(true);
     setShowAddQuestionUI(true);
   }
+  async function handleAnswer(answer: string) {
+    await markAnswered(answer)
+  }
   return (
     <div
       className={`w-full h-full bg-pink-50 text-black ${comingSoon.className}`}
@@ -226,6 +229,7 @@ export default function QuizPageUI({
             correctAnswer={question.correctAnswer}
             correctExplanation={question.correctAnswerExplanation}
             onEdit={() => handleEditQuestion(i)}
+            handleAnswer={(answer) => handleAnswer(answer)}
           />
         ))}
       </div>
@@ -259,7 +263,7 @@ export default function QuizPageUI({
             header={
               <div className="flex flex-row gap-2 items-center">
                 <div className="flex flex-col gap-2 flex-1">
-                  {editingQuestion ? (
+                  {isEditingExistingQuestion ? (
                     <>
                       <h2 className="text-2xl font-bold">Editing question</h2>
                       <p>want to change things up?</p>

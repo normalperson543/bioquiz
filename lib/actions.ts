@@ -2,6 +2,7 @@
 
 import { Option } from "@prisma/client";
 import { prisma } from "./db";
+import { auth } from "@clerk/nextjs/server";
 
 export async function addQuestion(
   questionId: string,
@@ -35,7 +36,22 @@ export async function addQuestion(
 
   return question;
 }
-export async function markAnswered(questionId: string) {}
+export async function markAnswered(optionId: string) {
+  const user = await auth()
+  if (!user.userId) throw new Error("No user")
+  await prisma.option.update({
+    where: {
+      id: optionId
+    },
+    data: {
+      answered: {
+        connect: {
+          id: user.userId
+        }
+      }
+    }
+  })
+}
 export async function updateQuestion(
   questionId: string,
   questionName: string,

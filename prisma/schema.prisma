@@ -42,7 +42,7 @@ model Question {
   options           Option[]
   answered          Profile[] @relation("answeredQuestions")
   answeredCorrectly Profile[] @relation("answeredQuestionsCorrectly")
-  dateCreated       DateTime?
+  dateCreated       DateTime @default(now())
 
   correctAnswer            String
   correctAnswerExplanation String
@@ -50,7 +50,7 @@ model Question {
 }
 
 model Profile {
-  id                String   @id @unique @default(uuid())
+  id                String   @id @unique
   username          String
   profilePicture    String?
   dateCreated       DateTime @default(now())

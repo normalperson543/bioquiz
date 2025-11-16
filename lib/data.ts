@@ -12,15 +12,18 @@ export async function getQuiz(id: string) {
         include: {
           options: true,
         },
+        orderBy: {
+          dateCreated: "asc"
+        }
       },
     },
   });
 }
 
-export async function getUserFromDb(email: string, password: string) {
-  const user = await prisma.profile.findFirst({
+export async function getUserFromDb(id: string) {
+  const user = await prisma.profile.findUnique({
     where: {
-      email: email,
+      id: id,
     },
   });
   return user;
