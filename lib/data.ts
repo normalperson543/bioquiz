@@ -28,3 +28,11 @@ export async function getUserFromDb(id: string) {
   });
   return user;
 }
+export async function getQuizzes(userId: string) {
+  const quizzes = await prisma.quiz.findMany({
+    where: {
+      profileId: userId
+    }
+  })
+  return quizzes
+}
