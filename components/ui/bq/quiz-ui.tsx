@@ -234,6 +234,7 @@ export default function QuizPageUI({
             correctAnswer={question.correctAnswer}
             correctExplanation={question.correctAnswerExplanation}
             onEdit={() => handleEditQuestion(i)}
+            canEdit={currentUser.user?.id === quiz.owner.id}
             handleAnswer={(answer) => handleAnswer(answer)}
           />
         ))}

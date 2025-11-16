@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Button from "./button";
 import {
   FileCheckIcon,
@@ -27,10 +28,12 @@ export default function QuizResult({
         </div>
       </div>
       <div className="flex flex-row gap-2 items-center">
-        <Button>
-          <EditIcon width={16} height={16} />
-          Play/Edit
-        </Button>
+        <Link href={`/${id}`}>
+          <Button>
+            <EditIcon width={16} height={16} />
+            Play/Edit
+          </Button>
+        </Link>
         <Button>
           <GlobeLockIcon width={16} height={16} />
           Unpublish

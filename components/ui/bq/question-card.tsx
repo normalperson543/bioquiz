@@ -21,6 +21,7 @@ export default function QuestionCard({
   comments,
   handleAnswer,
   onEdit,
+  canEdit,
 }: {
   number: number;
   questionName: string;
@@ -31,6 +32,7 @@ export default function QuestionCard({
   lockedFromAnsweringDb: boolean;
   handleAnswer: (answer: string) => void;
   onEdit: () => void;
+  canEdit: boolean;
 }) {
   const [selAnswer, setSelAnswer] = useState("");
 
@@ -50,12 +52,14 @@ export default function QuestionCard({
           </div>
           <h2 className="text-xl">Question {number}</h2>
         </div>
-        <div className="flex flex-row gap-2">
-          <Button onClick={onEdit}>
-            <PencilIcon width={16} height={16} />
-            Edit
-          </Button>
-        </div>
+        {canEdit && (
+          <div className="flex flex-row gap-2">
+            <Button onClick={onEdit}>
+              <PencilIcon width={16} height={16} />
+              Edit
+            </Button>
+          </div>
+        )}
       </div>
       <div className="p-4 flex flex-col gap-2">
         <div className="w-full flex flex-col gap-2">

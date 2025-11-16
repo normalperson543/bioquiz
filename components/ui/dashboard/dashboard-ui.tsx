@@ -10,7 +10,8 @@ import {
 import Button from "../button";
 import { createQuiz } from "@/lib/actions";
 import QuizResult from "../quiz-result";
-export default function DashboardUI({ username }: { username: string }) {
+import { Quiz } from "@prisma/client";
+export default function DashboardUI({ username, createdQuizzes }: { username: string, createdQuizzes: Quiz[] }) {
   return (
     <div className={`${comingSoon.className} flex flex-col gap-2`}>
       <div className="bg-pink-100 p-4 flex flex-col gap-2">
@@ -30,7 +31,10 @@ export default function DashboardUI({ username }: { username: string }) {
       
       <div className="flex flex-col p-4">
         <h2 className="text-2xl font-bold">my quizzes</h2>
-        <QuizResult />
+        {createdQuizzes.map((quiz) =>
+        
+        
+          <QuizResult id={quiz.id} name={quiz.title} creationDate={quiz.dateCreated}/>)}
       </div>
     </div>
   );

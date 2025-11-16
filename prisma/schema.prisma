@@ -15,6 +15,7 @@ model Quiz {
   description String?
   links       QuizLink[]
   title       String     @default("Untitled quiz")
+  dateCreated DateTime   @default(now())
 }
 
 model QuizLink {
