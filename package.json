@@ -30,6 +30,7 @@
     "eslint": "^9",
     "eslint-config-next": "15.3.1",
     "postcss": "^8",
+    "prettier": "3.6.2",
     "prisma": "^6.18.0",
     "tailwindcss": "^4.1.17",
     "tailwindcss-animate": "^1.0.7",

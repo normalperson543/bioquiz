@@ -88,7 +88,7 @@ export default function QuizPageUI({
         options,
         editingCorrectAnswer,
         correctAnswerExplanation,
-        quiz.id
+        quiz.id,
       );
       if (!question) {
         console.error("whoops");
@@ -114,7 +114,7 @@ export default function QuizPageUI({
       options,
       editingCorrectAnswer,
       correctAnswerExplanation,
-      quiz.id
+      quiz.id,
     );
     if (!question) {
       console.error("whoops");
@@ -172,7 +172,7 @@ export default function QuizPageUI({
             src={
               quiz.owner.profilePicture ??
               `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                quiz.owner.username
+                quiz.owner.username,
               )}`
             }
             alt={`${quiz.owner.username}'s profile picture`}
