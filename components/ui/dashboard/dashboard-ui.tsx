@@ -8,6 +8,7 @@ import {
   TrashIcon,
 } from "lucide-react";
 import Button from "../button";
+import { createQuiz } from "@/lib/actions";
 export default function DashboardUI({ username }: { username: string }) {
   return (
     <div className={`${comingSoon.className} flex flex-col gap-2`}>
@@ -18,7 +19,7 @@ export default function DashboardUI({ username }: { username: string }) {
             <p>hi {username}, what a nice day it is to create a new quiz!</p>
           </div>
           <div className="flex flex-row gap-2">
-            <Button>
+            <Button onClick={createQuiz}>
               <PlusIcon width={16} height={16} />
               New quiz
             </Button>

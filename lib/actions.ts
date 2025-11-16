@@ -3,6 +3,7 @@
 import { Option } from "@prisma/client";
 import { prisma } from "./db";
 import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 
 export async function addQuestion(
   questionId: string,
@@ -90,4 +91,19 @@ export async function updateQuestion(
   });
 
   return question;
+}
+export async function createQuiz() {
+  const currentUser = await auth()
+  if (currentUser && currentUser.userId) {
+    const quiz = await prisma.quiz.create({
+      data: {
+        profileId: currentUser.userId
+      }
+    })
+    redirect(`/${quiz.id}`)
+    return quiz
+  } else {
+    return;
+  }
+
 }

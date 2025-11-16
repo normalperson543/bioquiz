@@ -10,7 +10,9 @@ export default clerkMiddleware(async (auth, req) => {
       where: {
         id: sessionClaims.userId as string,
       },
-      update: {},
+      update: {
+        profilePicture: sessionClaims.image_url
+      },
       create: {
         id: sessionClaims.userId as string,
         username: sessionClaims.username

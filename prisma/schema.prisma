@@ -12,9 +12,9 @@ model Quiz {
   questions   Question[]
   owner       Profile    @relation(fields: [profileId], references: [id])
   profileId   String
-  description String
+  description String?
   links       QuizLink[]
-  title       String     @default("Your quiz title")
+  title       String     @default("Untitled quiz")
 }
 
 model QuizLink {

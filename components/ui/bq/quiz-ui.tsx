@@ -28,6 +28,7 @@ import EditableOption from "./editable-option";
 import { v4 } from "uuid";
 import { addQuestion, markAnswered, updateQuestion } from "@/lib/actions";
 import Link from "next/link";
+import { useUser } from "@clerk/nextjs";
 export default function QuizPageUI({
   quiz: quizDb,
 }: {
@@ -42,6 +43,7 @@ export default function QuizPageUI({
   const [correctAnswerExplanation, setCorrectAnswerExplanation] = useState("");
   const [isEditingExistingQuestion, setIsEditingExistingQuestion] =
     useState(false);
+  const currentUser = useUser();
 
   function handleOptionTextChanged(id: string, newName: string) {
     const nextOptions = options.map((option) => {
@@ -158,7 +160,7 @@ export default function QuizPageUI({
     setShowAddQuestionUI(true);
   }
   async function handleAnswer(answer: string) {
-    await markAnswered(answer)
+    await markAnswered(answer);
   }
   return (
     <div
@@ -174,16 +176,17 @@ export default function QuizPageUI({
               )}`
             }
             alt={`${quiz.owner.username}'s profile picture`}
-            width={60}
-            height={60}
-            className="rounded-sm"
+            width={64}
+            height={64}
+            className="rounded-sm object-cover w-16 h-16 border-pink-200 border-2"
           />
           <div className="flex flex-col gap-2 text-black">
             <h2 className="text-4xl">{quiz.title}</h2>
             <p>
               by{" "}
               <Link href={`/profile/${quiz.owner.username}`}>
-                @{quiz.owner.username} -{" "}
+                @{quiz.owner.username}
+                {quiz.description && "- "}
               </Link>
               {quiz.description}
             </p>
@@ -202,24 +205,26 @@ export default function QuizPageUI({
             ))}
         </div>
       </div>
-      <div className="pt-4 pb-4 pl-12 pr-12 flex flex-row items-center gap-2 bg-orange-200">
-        <Button onClick={handleAddQuestion}>
-          <PlusIcon width={16} height={16} />
-          Add question
-        </Button>
-        <Button>
-          <PenIcon width={16} height={16} />
-          Change info
-        </Button>
-        <Button>
-          <GlobeLockIcon width={16} height={16} />
-          Unpublish
-        </Button>
-        <Button>
-          <TrashIcon width={16} height={16} />
-          Delete
-        </Button>
-      </div>
+      {currentUser.user?.id === quiz.owner.id && (
+        <div className="pt-4 pb-4 pl-12 pr-12 flex flex-row items-center gap-2 bg-orange-200">
+          <Button onClick={handleAddQuestion}>
+            <PlusIcon width={16} height={16} />
+            Add question
+          </Button>
+          <Button>
+            <PenIcon width={16} height={16} />
+            Change info
+          </Button>
+          <Button>
+            <GlobeLockIcon width={16} height={16} />
+            Unpublish
+          </Button>
+          <Button>
+            <TrashIcon width={16} height={16} />
+            Delete
+          </Button>
+        </div>
+      )}
       <div className="p-8 flex flex-col gap-6">
         {quiz.questions.map((question, i) => (
           <QuestionCard
