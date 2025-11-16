@@ -10,25 +10,35 @@ import { linkTypes } from "@/lib/constants";
 import QuestionCard from "./question-card";
 import {
   CheckIcon,
+  GlobeIcon,
   GlobeLockIcon,
   MailIcon,
   PenIcon,
   PhoneIcon,
   PlusIcon,
+  TableOfContentsIcon,
   TextCursorIcon,
   TrashIcon,
+  TriangleAlertIcon,
   XIcon,
 } from "lucide-react";
 import Button from "../button";
 import { useRef, useState } from "react";
 import Overlay from "../overlay";
 import Modal from "../modal";
-import Input from "../input";
+import TextInput from "../text-input";
 import EditableOption from "./editable-option";
 import { v4 } from "uuid";
-import { addQuestion, markAnswered, updateQuestion } from "@/lib/actions";
+import {
+  addQuestion,
+  markAnswered,
+  updateQuestion,
+  updateQuiz,
+} from "@/lib/actions";
 import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
+import InputInfo from "../input-info";
+import TextareaInput from "../textarea-input";
 export default function QuizPageUI({
   quiz: quizDb,
 }: {
@@ -43,6 +53,13 @@ export default function QuizPageUI({
   const [correctAnswerExplanation, setCorrectAnswerExplanation] = useState("");
   const [isEditingExistingQuestion, setIsEditingExistingQuestion] =
     useState(false);
+  const [quizName, setQuizName] = useState(quiz.title);
+  const [showInfoUI, setShowInfoUI] = useState(false);
+  const [quizDescription, setQuizDescription] = useState(
+    quiz.description ?? "",
+  );
+  const [showConfirmPublishModal, setShowConfirmPublishModal] = useState(false)
+
   const currentUser = useUser();
 
   function handleOptionTextChanged(id: string, newName: string) {
@@ -162,6 +179,31 @@ export default function QuizPageUI({
   async function handleAnswer(answer: string) {
     await markAnswered(answer);
   }
+  function handleOpenInfoModal() {
+    setQuizName(quiz.title);
+    setQuizDescription(quiz.description ?? "");
+    setShowInfoUI(true);
+  }
+  async function handleFinishEditingQuiz() {
+    await updateQuiz(quiz.id, quizName, quizDescription, quiz.isPublic);
+    setQuiz({
+      ...quiz,
+      title: quizName,
+      description: quizDescription
+    });
+    setShowInfoUI(false)
+  }
+  async function setPublishStatus(newStatus: boolean) {
+    await updateQuiz(quiz.id, quiz.title, quiz.description ?? "", newStatus)
+    setQuiz({
+      ...quiz,
+      isPublic: newStatus
+    })
+  }
+  function handleOpenConfirmPublishModal() {
+    // might remove this function later for redundancy
+    setShowConfirmPublishModal(true)
+  }
   return (
     <div
       className={`w-full h-full bg-pink-50 text-black ${comingSoon.className}`}
@@ -211,17 +253,9 @@ export default function QuizPageUI({
             <PlusIcon width={16} height={16} />
             Add question
           </Button>
-          <Button>
+          <Button onClick={handleOpenInfoModal}>
             <PenIcon width={16} height={16} />
             Change info
-          </Button>
-          <Button>
-            <GlobeLockIcon width={16} height={16} />
-            Unpublish
-          </Button>
-          <Button>
-            <TrashIcon width={16} height={16} />
-            Delete
           </Button>
         </div>
       )}
@@ -287,7 +321,7 @@ export default function QuizPageUI({
               </div>
             }
           >
-            <Input
+            <TextInput
               icon={<TextCursorIcon width={16} height={16} />}
               onChange={(e) => setQuestionName(e.target.value)}
               value={questionName}
@@ -337,7 +371,7 @@ export default function QuizPageUI({
                 }
               />
             ))}
-            <Input
+            <TextInput
               icon={<CheckIcon width={16} height={16} />}
               onChange={(e) => setCorrectAnswerExplanation(e.target.value)}
               value={correctAnswerExplanation}
@@ -352,6 +386,77 @@ export default function QuizPageUI({
                   Finish
                 </Button>
               )}
+          </Modal>
+        </Overlay>
+      )}
+      {showInfoUI && (
+        <Overlay>
+          <Modal
+            header={
+              <h2 className="text-2xl font-bold">
+                Changing settings for {quiz.title}
+              </h2>
+            }
+          >
+            <TextInput
+              icon={<TextCursorIcon width={16} height={16} />}
+              onChange={(e) => setQuizName(e.target.value)}
+              value={quizName}
+              label="Quiz name"
+            />
+            <TextareaInput
+              icon={<TableOfContentsIcon width={16} height={16} />}
+              onChange={(e) => setQuizDescription(e.target.value)}
+              value={quizDescription}
+              label="Quiz description"
+            />
+            <InputInfo
+              label="Danger zone"
+              icon={<TriangleAlertIcon width={16} height={16} />}
+            />
+            {quiz.isPublic ?
+              <Button>
+                <GlobeLockIcon width={16} height={16} />
+                Unpublish
+              </Button>
+              :
+              <Button onClick={handleOpenConfirmPublishModal}>
+                <GlobeIcon width={16} height={16} />
+                Publish
+              </Button>
+            }
+            
+            <Button>
+              <TrashIcon width={16} height={16} />
+              Delete
+            </Button>
+            <div className="w-3/4 ml-auto mr-auto mt-2 mb-2 h-0.5 bg-pink-300"></div>
+            <Button onClick={handleFinishEditingQuiz}>
+              <CheckIcon width={16} height={16} />
+              Finish
+            </Button>
+          </Modal>
+        </Overlay>
+      )}
+      {showInfoUI && (
+        <Overlay>
+          <Modal
+            header={
+              <h2 className="text-2xl font-bold">
+                Confirm visibility
+              </h2>
+            }
+          >
+            <p>Warning: You're about to make your quiz {quiz.isPublic ? <b>private</b> : <b>public</b>}.</p>
+            <p>Are you really sure you want to do this?</p>
+            <Button onClick>
+              <CheckIcon width={16} height={16}/>
+              YESSSSSS
+            </Button>
+            <Button>
+              <XIcon width={16} height={16}/>
+              NAURRRRR
+            </Button>
           </Modal>
         </Overlay>
       )}

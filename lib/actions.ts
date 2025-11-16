@@ -1,6 +1,6 @@
 "use server";
 
-import { Option } from "@prisma/client";
+import { Option, Quiz } from "@prisma/client";
 import { prisma } from "./db";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
@@ -106,4 +106,17 @@ export async function createQuiz() {
     return;
   }
 
+}
+export async function updateQuiz(id: string, title: string, description: string, isPublic: boolean) {
+  const updatedQuiz = await prisma.quiz.update({
+    where: {
+      id: id
+    },
+    data: {
+      title: title,
+      description: description,
+      isPublic: isPublic
+    }
+  })
+  return updatedQuiz
 }

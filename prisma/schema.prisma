@@ -16,6 +16,8 @@ model Quiz {
   links       QuizLink[]
   title       String     @default("Untitled quiz")
   dateCreated DateTime   @default(now())
+  isPublic    Boolean    @default(false)
+  datePublished DateTime?
 }
 
 model QuizLink {
@@ -43,7 +45,7 @@ model Question {
   options           Option[]
   answered          Profile[] @relation("answeredQuestions")
   answeredCorrectly Profile[] @relation("answeredQuestionsCorrectly")
-  dateCreated       DateTime @default(now())
+  dateCreated       DateTime  @default(now())
 
   correctAnswer            String
   correctAnswerExplanation String

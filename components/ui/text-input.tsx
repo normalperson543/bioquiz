@@ -1,10 +1,11 @@
 import { ChangeEvent } from "react";
+import InputInfo from "./input-info";
 
-export default function Input({
+export default function TextInput({
   icon,
   onChange,
   value,
-  label
+  label,
 }: {
   icon: React.ReactNode;
   onChange: (event: ChangeEvent<HTMLInputElement>) => void;
@@ -13,12 +14,7 @@ export default function Input({
 }) {
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex flex-row gap-3 items-center">
-        <div className="p-2 bg-pink-200 rounded-full">
-          {icon}
-        </div>
-        <label className="font-bold">{label}</label>
-      </div>
+      <InputInfo label={label} icon={icon} />
       <input
         type="text"
         onChange={onChange}
