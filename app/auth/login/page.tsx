@@ -12,7 +12,7 @@ export default function AuthLoginPage() {
             card: "rounded-sm p-6 bg-pink-100",
             input: "border-2 bg-pink-100 border-pink-200 rounded-sm p-2",
             socialButtonsBlockButton: `${buttonCn} p-3`,
-            formButtonPrimary: `${buttonCn} !font-black p-3`,
+            formButtonPrimary: `${buttonCn} font-black! p-3`,
             alternativeMethodsBlockButton: `${buttonCn}`,
           },
         }}

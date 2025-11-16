@@ -298,17 +298,17 @@ export default function QuizPageUI({
                 <p>Pick a minumum of 2 options, max 5 options.</p>
               </div>
               {options.length < 2 && (
-                <div className="p-1 rounded-xl bg-orange-200 flex-shrink">
+                <div className="p-1 rounded-xl bg-orange-200 shrink">
                   {options.length}/2
                 </div>
               )}
               {options.length >= 2 && options.length <= 5 && (
-                <div className="p-1 rounded-xl bg-green-200 flex-shrink">
+                <div className="p-1 rounded-xl bg-green-200 shrink">
                   {options.length}/5
                 </div>
               )}
               {options.length > 5 && (
-                <div className="p-1 rounded-xl bg-red-200 flex-shrink">
+                <div className="p-1 rounded-xl bg-red-200 shrink">
                   {options.length}/5
                 </div>
               )}

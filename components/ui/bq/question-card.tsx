@@ -63,7 +63,7 @@ export default function QuestionCard({
         </div>
         {options.map((option) => (
           <button
-            className="w-full p-4 flex flex-row justify-start rounded-full border-1 border-pink-400 bg-pink-300 hover:bg-pink-400 items-center gap-2"
+            className="w-full p-4 flex flex-row justify-start rounded-full border border-pink-400 bg-pink-300 hover:bg-pink-400 items-center gap-2"
             onClick={() => handleSelectAnswer(option.id)}
           >
             <div className="bg-pink-400 p-1 w-8 h-8 rounded-full">
