@@ -4,6 +4,7 @@ import { Option, Quiz } from "@prisma/client";
 import { prisma } from "./db";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 
 export async function addQuestion(
   questionId: string,
@@ -119,4 +120,13 @@ export async function updateQuiz(id: string, title: string, description: string,
     }
   })
   return updatedQuiz
+}
+export async function deleteQuiz(id: string) {
+  await prisma.quiz.delete({
+    where: {
+      id: id
+    }
+  })
+  revalidatePath(`/${id}`)
+  redirect("/dashboard")
 }

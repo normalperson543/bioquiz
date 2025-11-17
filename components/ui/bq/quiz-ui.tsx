@@ -34,11 +34,13 @@ import {
   markAnswered,
   updateQuestion,
   updateQuiz,
+  deleteQuiz
 } from "@/lib/actions";
 import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
 import InputInfo from "../input-info";
 import TextareaInput from "../textarea-input";
+
 export default function QuizPageUI({
   quiz: quizDb,
 }: {
@@ -59,6 +61,7 @@ export default function QuizPageUI({
     quiz.description ?? "",
   );
   const [showConfirmPublishModal, setShowConfirmPublishModal] = useState(false)
+  const [showDeleteConfirmModal, setDeleteConfirmModal] = useState(false)
 
   const currentUser = useUser();
 
@@ -199,10 +202,7 @@ export default function QuizPageUI({
       ...quiz,
       isPublic: newStatus
     })
-  }
-  function handleOpenConfirmPublishModal() {
-    // might remove this function later for redundancy
-    setShowConfirmPublishModal(true)
+    setShowConfirmPublishModal(false)
   }
   return (
     <div
@@ -415,18 +415,18 @@ export default function QuizPageUI({
               icon={<TriangleAlertIcon width={16} height={16} />}
             />
             {quiz.isPublic ?
-              <Button>
+              <Button onClick={() => setShowConfirmPublishModal(true)}>
                 <GlobeLockIcon width={16} height={16} />
                 Unpublish
               </Button>
               :
-              <Button onClick={handleOpenConfirmPublishModal}>
+              <Button onClick={() => setShowConfirmPublishModal(true)}>
                 <GlobeIcon width={16} height={16} />
                 Publish
               </Button>
             }
-            
-            <Button>
+
+            <Button onClick={() => setDeleteConfirmModal(true)}>
               <TrashIcon width={16} height={16} />
               Delete
             </Button>
@@ -438,7 +438,7 @@ export default function QuizPageUI({
           </Modal>
         </Overlay>
       )}
-      {showInfoUI && (
+      {showConfirmPublishModal && (
         <Overlay>
           <Modal
             header={
@@ -449,17 +449,41 @@ export default function QuizPageUI({
           >
             <p>Warning: You're about to make your quiz {quiz.isPublic ? <b>private</b> : <b>public</b>}.</p>
             <p>Are you really sure you want to do this?</p>
-            <Button onClick>
+            <Button onClick={() => setPublishStatus(!quiz.isPublic)}>
               <CheckIcon width={16} height={16}/>
               YESSSSSS
             </Button>
-            <Button>
+            <Button onClick={() => setShowConfirmPublishModal(false)}>
               <XIcon width={16} height={16}/>
               NAURRRRR
             </Button>
           </Modal>
         </Overlay>
       )}
+      {
+        showDeleteConfirmModal && <Overlay>
+          <Modal
+            header={
+              <h2 className="text-2xl font-bold">
+                Confirm deletion
+              </h2>
+            }
+          >
+            <p>Warning: You're about to <b>delete your quiz</b></p>
+            <p>This is a <b>destructive</b> action! You won't be able to get your quiz back. All your questions, answers, and analytics will disappear.</p>
+            <p>Are you really sure you want to do this?</p>
+            <Button onClick={() => deleteQuiz(quiz.id)}>
+              <CheckIcon width={16} height={16}/>
+              yes :')
+            </Button>
+            <Button onClick={() => setDeleteConfirmModal(false)}>
+              <XIcon width={16} height={16}/>
+              NO NO NO NO NO
+            </Button>
+          </Modal>
+        </Overlay>
+      }
     </div>
+
   );
 }
