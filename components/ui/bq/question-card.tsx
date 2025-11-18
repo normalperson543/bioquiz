@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
-import { Option, Profile } from "@prisma/client";
+import { Profile } from "@prisma/client";
 import { icons } from "@/lib/constants";
 import Button from "../button";
 import { useUser } from "@clerk/nextjs";
@@ -24,6 +24,7 @@ export default function QuestionCard({
   handleAnswer,
   onEdit,
   canEdit,
+  answered
 }: {
   number: number;
   questionName: string;
@@ -35,11 +36,12 @@ export default function QuestionCard({
   handleAnswer: (answer: string) => void;
   onEdit: () => void;
   canEdit: boolean;
+  answered: Profile[]
 }) {
   const [selAnswer, setSelAnswer] = useState("");
   const user = useUser()
   
-  console.log("boop", options);
+  console.log("boop", answered);
 
   function handleSelectAnswer(optionId: string) {
     handleAnswer(optionId);
@@ -70,15 +72,15 @@ export default function QuestionCard({
         </div>
         {options.map((option) => (
           <button
-            className="w-full p-4 flex flex-row justify-start rounded-full border border-pink-400 bg-pink-300 hover:bg-pink-400 items-center gap-2"
+            className={`w-full p-4 flex flex-row justify-start rounded-full border border-pink-400 bg-pink-300 hover:bg-pink-400 items-center gap-2 ${option.id === selAnswer || option.answered.findIndex((profile: Profile) => profile.id === user.user?.id  as string) > -1 && "border-blue-400! bg-blue-300! hover:bg-blue-400!"}`}
             onClick={() => handleSelectAnswer(option.id)}
             disabled={
               lockedFromAnsweringDb &&
               (selAnswer !== "" ||
-                option.answered.find((profile: Profile) => profile.id === user.user?.id  as string))
+                answered.findIndex((profile: Profile) => profile.id === user.user?.id  as string) > -1)
             }
           >
-            <div className="bg-pink-400 p-1 w-8 h-8 rounded-full">
+            <div className={`bg-pink-400 p-1 w-8 h-8 rounded-full ${option.id === selAnswer || option.answered.findIndex((profile: Profile) => profile.id === user.user?.id  as string) > -1 && "bg-blue-400!"}`}>
               {icons[Number(option.icon ?? 0)]}
             </div>
             <b>{option.name}</b>

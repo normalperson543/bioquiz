@@ -279,6 +279,7 @@ export default function QuizPageUI({
             canEdit={currentUser.user?.id === quiz.owner.id}
             handleAnswer={(answer) => handleAnswer(answer)}
             lockedFromAnsweringDb={quiz.lockAnswersAutomatically}
+            answered={question.answered}
           />
         ))}
       </div>
@@ -419,11 +420,16 @@ export default function QuizPageUI({
               value={quizDescription}
               label="Quiz description"
             />
+            <div className="flex flex-row gap-2">
+              
             
             <Checkbox
               checked={quiz.lockAnswersAutomatically}
               onChange={() => toggleLockedFromAnswering()}
             />
+            <p>When users answer a question, prevent the answer from being changed</p>
+            </div>
+            
             <InputInfo
               label="Danger zone"
               icon={<TriangleAlertIcon width={16} height={16} />}

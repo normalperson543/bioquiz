@@ -10,7 +10,12 @@ export async function getQuiz(id: string) {
       owner: true,
       questions: {
         include: {
-          options: true,
+          options: {
+            include: {
+              answered: true
+            }
+          },
+          answered: true
         },
         orderBy: {
           dateCreated: "asc"
