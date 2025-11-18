@@ -7,9 +7,11 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
-import { Option } from "@prisma/client";
+import { Option, Profile } from "@prisma/client";
 import { icons } from "@/lib/constants";
 import Button from "../button";
+import { useUser } from "@clerk/nextjs";
+import { OptionWithPublicInfo } from "@/lib/types";
 
 export default function QuestionCard({
   number,
@@ -25,7 +27,7 @@ export default function QuestionCard({
 }: {
   number: number;
   questionName: string;
-  options: Option[];
+  options: OptionWithPublicInfo[];
   correctAnswer: string;
   correctExplanation: string;
   comments?: null;
@@ -35,8 +37,9 @@ export default function QuestionCard({
   canEdit: boolean;
 }) {
   const [selAnswer, setSelAnswer] = useState("");
-
-  console.log("boop", correctAnswer);
+  const user = useUser()
+  
+  console.log("boop", options);
 
   function handleSelectAnswer(optionId: string) {
     handleAnswer(optionId);
@@ -69,6 +72,11 @@ export default function QuestionCard({
           <button
             className="w-full p-4 flex flex-row justify-start rounded-full border border-pink-400 bg-pink-300 hover:bg-pink-400 items-center gap-2"
             onClick={() => handleSelectAnswer(option.id)}
+            disabled={
+              lockedFromAnsweringDb &&
+              (selAnswer !== "" ||
+                option.answered.find((profile: Profile) => profile.id === user.user?.id  as string))
+            }
           >
             <div className="bg-pink-400 p-1 w-8 h-8 rounded-full">
               {icons[Number(option.icon ?? 0)]}

@@ -41,9 +41,21 @@ export async function addQuestion(
 export async function markAnswered(optionId: string) {
   const user = await auth()
   if (!user.userId) throw new Error("No user")
-  await prisma.option.update({
+  const option = await prisma.option.update({
     where: {
       id: optionId
+    },
+    data: {
+      answered: {
+        connect: {
+          id: user.userId
+        }
+      }
+    }
+  })
+  await prisma.question.update({
+    where: {
+      id: option.questionId as string
     },
     data: {
       answered: {
@@ -108,7 +120,7 @@ export async function createQuiz() {
   }
 
 }
-export async function updateQuiz(id: string, title: string, description: string, isPublic: boolean) {
+export async function updateQuiz(id: string, title: string, description: string, isPublic: boolean, lockedFromAnswering: boolean) {
   const updatedQuiz = await prisma.quiz.update({
     where: {
       id: id
@@ -116,7 +128,8 @@ export async function updateQuiz(id: string, title: string, description: string,
     data: {
       title: title,
       description: description,
-      isPublic: isPublic
+      isPublic: isPublic,
+      lockAnswersAutomatically: lockedFromAnswering
     }
   })
   return updatedQuiz

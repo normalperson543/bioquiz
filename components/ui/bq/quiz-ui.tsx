@@ -40,6 +40,7 @@ import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
 import InputInfo from "../input-info";
 import TextareaInput from "../textarea-input";
+import Checkbox from "../checkbox";
 
 export default function QuizPageUI({
   quiz: quizDb,
@@ -188,7 +189,7 @@ export default function QuizPageUI({
     setShowInfoUI(true);
   }
   async function handleFinishEditingQuiz() {
-    await updateQuiz(quiz.id, quizName, quizDescription, quiz.isPublic);
+    await updateQuiz(quiz.id, quizName, quizDescription, quiz.isPublic, quiz.lockAnswersAutomatically);
     setQuiz({
       ...quiz,
       title: quizName,
@@ -197,12 +198,19 @@ export default function QuizPageUI({
     setShowInfoUI(false)
   }
   async function setPublishStatus(newStatus: boolean) {
-    await updateQuiz(quiz.id, quiz.title, quiz.description ?? "", newStatus)
+    await updateQuiz(quiz.id, quiz.title, quiz.description ?? "", newStatus, quiz.lockAnswersAutomatically)
     setQuiz({
       ...quiz,
       isPublic: newStatus
     })
     setShowConfirmPublishModal(false)
+  }
+  async function toggleLockedFromAnswering() {
+    await updateQuiz(quiz.id, quiz.title, quiz.description ?? "", quiz.isPublic, !quiz.lockAnswersAutomatically)
+    setQuiz({
+      ...quiz,
+      lockAnswersAutomatically: !quiz.lockAnswersAutomatically
+    })
   }
   return (
     <div
@@ -270,6 +278,7 @@ export default function QuizPageUI({
             onEdit={() => handleEditQuestion(i)}
             canEdit={currentUser.user?.id === quiz.owner.id}
             handleAnswer={(answer) => handleAnswer(answer)}
+            lockedFromAnsweringDb={quiz.lockAnswersAutomatically}
           />
         ))}
       </div>
@@ -409,6 +418,11 @@ export default function QuizPageUI({
               onChange={(e) => setQuizDescription(e.target.value)}
               value={quizDescription}
               label="Quiz description"
+            />
+            
+            <Checkbox
+              checked={quiz.lockAnswersAutomatically}
+              onChange={() => toggleLockedFromAnswering()}
             />
             <InputInfo
               label="Danger zone"

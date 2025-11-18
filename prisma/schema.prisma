@@ -18,6 +18,7 @@ model Quiz {
   dateCreated DateTime   @default(now())
   isPublic    Boolean    @default(false)
   datePublished DateTime?
+  lockAnswersAutomatically Boolean @default(false)
 }
 
 model QuizLink {
@@ -33,7 +34,7 @@ model Option {
   id         String    @id @unique @default(uuid())
   icon       Int?
   name       String
-  Question   Question? @relation(fields: [questionId], references: [id])
+  question   Question? @relation(fields: [questionId], references: [id])
   questionId String?
   answered   Profile[]
 }
@@ -44,7 +45,6 @@ model Question {
   questionName      String
   options           Option[]
   answered          Profile[] @relation("answeredQuestions")
-  answeredCorrectly Profile[] @relation("answeredQuestionsCorrectly")
   dateCreated       DateTime  @default(now())
 
   correctAnswer            String
@@ -60,11 +60,8 @@ model Profile {
   quizzes           Quiz[]
   description       String?
   email             String   @default("you@example.com")
-  password          String?
-  usePasswordSignIn Boolean  @default(true)
 
   answeredQuestions          Question[] @relation("answeredQuestions")
-  answeredQuestionsCorrectly Question[] @relation("answeredQuestionsCorrectly")
   Option                     Option?    @relation(fields: [optionId], references: [id])
   optionId                   String?
 }

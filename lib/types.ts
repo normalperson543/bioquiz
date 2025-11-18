@@ -6,7 +6,7 @@ export type QuizWithPublicInfo = Prisma.QuizGetPayload<{
     owner: true;
     questions: {
       include: {
-        options: true;
+        options: true
       };
     };
   };
