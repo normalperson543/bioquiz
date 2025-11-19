@@ -6,7 +6,7 @@ import {
   XIcon,
 } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Profile } from "@prisma/client";
 import { icons } from "@/lib/constants";
 import Button from "../button";
@@ -24,7 +24,7 @@ export default function QuestionCard({
   handleAnswer,
   onEdit,
   canEdit,
-  answered
+  answered,
 }: {
   number: number;
   questionName: string;
@@ -36,11 +36,28 @@ export default function QuestionCard({
   handleAnswer: (answer: string) => void;
   onEdit: () => void;
   canEdit: boolean;
-  answered: Profile[]
+  answered: Profile[];
 }) {
   const [selAnswer, setSelAnswer] = useState("");
-  const user = useUser()
+  const user = useUser();
+  let loaded = false;
   
+  useEffect(() => {
+    if (loaded) return;
+    console.log("dksfjlsk")
+    options.forEach((option) => {
+      console.log(user)
+      if (
+        option.answered.findIndex(
+          (profile: Profile) => profile.id === (user.user?.id as string),
+        ) > -1
+      ) {
+        setSelAnswer(option.id);
+      }
+    });
+    loaded = true
+  }, [options, user]);
+
   console.log("boop", answered);
 
   function handleSelectAnswer(optionId: string) {
@@ -72,15 +89,20 @@ export default function QuestionCard({
         </div>
         {options.map((option) => (
           <button
-            className={`w-full p-4 flex flex-row justify-start rounded-full border border-pink-400 bg-pink-300 hover:bg-pink-400 items-center gap-2 ${option.id === selAnswer || option.answered.findIndex((profile: Profile) => profile.id === user.user?.id  as string) > -1 && "border-blue-400! bg-blue-300! hover:bg-blue-400!"}`}
+            className={`w-full p-4 flex flex-row justify-start rounded-full border border-pink-400 bg-pink-300 hover:bg-pink-400 items-center gap-2 ${option.id === selAnswer && "border-blue-400! bg-blue-300! hover:bg-blue-400!"}`}
             onClick={() => handleSelectAnswer(option.id)}
             disabled={
               lockedFromAnsweringDb &&
               (selAnswer !== "" ||
-                answered.findIndex((profile: Profile) => profile.id === user.user?.id  as string) > -1)
+                answered.findIndex(
+                  (profile: Profile) =>
+                    profile.id === (user.user?.id as string),
+                ) > -1)
             }
           >
-            <div className={`bg-pink-400 p-1 w-8 h-8 rounded-full ${option.id === selAnswer || option.answered.findIndex((profile: Profile) => profile.id === user.user?.id  as string) > -1 && "bg-blue-400!"}`}>
+            <div
+              className={`bg-pink-400 p-1 w-8 h-8 rounded-full ${option.id === selAnswer && "bg-blue-400!"}`}
+            >
               {icons[Number(option.icon ?? 0)]}
             </div>
             <b>{option.name}</b>
