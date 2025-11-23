@@ -63,7 +63,7 @@ export default function QuizPageUI({
   );
   const [showConfirmPublishModal, setShowConfirmPublishModal] = useState(false)
   const [showDeleteConfirmModal, setDeleteConfirmModal] = useState(false)
-
+  const [showQuizContactModal, setShowQuizContactModal] = useState(false)
   const currentUser = useUser();
 
   function handleOptionTextChanged(id: string, newName: string) {

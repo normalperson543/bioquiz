@@ -35,7 +35,9 @@ export default function RootLayout({
     >
       <html lang="en" suppressHydrationWarning className="w-full h-full">
         <Header />
-        <body className="antialiased w-full h-full">{children}</body>
+        <div className="pt-16 w-full h-full">
+          <body className="antialiased w-full h-full">{children}</body>
+        </div>
       </html>
     </ClerkProvider>
   );

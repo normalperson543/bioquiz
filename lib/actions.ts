@@ -91,8 +91,14 @@ export async function updateQuestion(
       questionId: questionId,
     },
   });
+  console.log(options)
   await prisma.option.createMany({
-    data: options,
+    data: options.map((option) => ({
+      name: option.name,
+      id: option.id,
+      icon: option.icon,
+      questionId: option.questionId
+    })),
   });
   const question = await prisma.question.findUnique({
     where: {

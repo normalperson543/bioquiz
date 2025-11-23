@@ -34,14 +34,6 @@ export default function QuizResult({
             Play/Edit
           </Button>
         </Link>
-        <Button>
-          <GlobeLockIcon width={16} height={16} />
-          Unpublish
-        </Button>
-        <Button>
-          <TrashIcon width={16} height={16} />
-          Delete
-        </Button>
       </div>
     </div>
   );
