@@ -6,7 +6,7 @@ import {
   XIcon,
 } from "lucide-react";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Profile } from "@prisma/client";
 import { icons } from "@/lib/constants";
 import Button from "../button";
@@ -40,10 +40,11 @@ export default function QuestionCard({
 }) {
   const [selAnswer, setSelAnswer] = useState("");
   const user = useUser();
-  let loaded = false;
+  const loaded = useRef(false);
   
   useEffect(() => {
-    if (loaded) return;
+    if (loaded.current) return;
+    if (!user.isLoaded) return;
     console.log("dksfjlsk")
     options.forEach((option) => {
       console.log(user)
@@ -55,8 +56,8 @@ export default function QuestionCard({
         setSelAnswer(option.id);
       }
     });
-    loaded = true
-  }, [options, user]);
+    loaded.current = true
+  }, [user]);
 
   console.log("boop", answered);
 

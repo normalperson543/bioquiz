@@ -1,3 +1,5 @@
+import HomepageUI from "@/components/ui/home/homepage-ui";
+
 export default async function Home() {
-  return <p>Coming Soon</p>
+  return <HomepageUI />
 }
