@@ -3,7 +3,7 @@
 import { comingSoon } from "@/lib/fonts";
 import { DynamicIcon } from "lucide-react/dynamic";
 import Image from "next/image";
-import { Option, Profile, Quiz } from "@prisma/client";
+import { Option, Profile, Quiz, QuizLink } from "@prisma/client";
 import { QuizWithPublicInfo } from "@/lib/types";
 import QuizLink from "./quiz-link";
 import { linkTypes } from "@/lib/constants";
@@ -13,6 +13,7 @@ import {
   GlobeIcon,
   GlobeLockIcon,
   MailIcon,
+  PencilIcon,
   PenIcon,
   PhoneIcon,
   PlusIcon,
@@ -23,7 +24,7 @@ import {
   XIcon,
 } from "lucide-react";
 import Button from "../button";
-import { useRef, useState } from "react";
+import { ChangeEvent, useRef, useState } from "react";
 import Overlay from "../overlay";
 import Modal from "../modal";
 import TextInput from "../text-input";
@@ -34,7 +35,7 @@ import {
   markAnswered,
   updateQuestion,
   updateQuiz,
-  deleteQuiz
+  deleteQuiz,
 } from "@/lib/actions";
 import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
@@ -61,9 +62,12 @@ export default function QuizPageUI({
   const [quizDescription, setQuizDescription] = useState(
     quiz.description ?? "",
   );
-  const [showConfirmPublishModal, setShowConfirmPublishModal] = useState(false)
-  const [showDeleteConfirmModal, setDeleteConfirmModal] = useState(false)
-  const [showQuizContactModal, setShowQuizContactModal] = useState(false)
+  const [showConfirmPublishModal, setShowConfirmPublishModal] = useState(false);
+  const [showDeleteConfirmModal, setDeleteConfirmModal] = useState(false);
+  const [showQuizContactModal, setShowQuizContactModal] = useState(false);
+  const [quizLinks, setQuizLinks] = useState<QuizLink[]>([]);
+  const [quizLinkStatus, setQuizLinkStatus] = useState("unset");
+
   const currentUser = useUser();
 
   function handleOptionTextChanged(id: string, newName: string) {
@@ -101,6 +105,7 @@ export default function QuizPageUI({
     console.log(id);
     setOptions(options.filter((option) => option.id !== id));
   }
+
   async function handleFinishQuestion() {
     if (isEditingExistingQuestion) {
       const question = await updateQuestion(
@@ -189,28 +194,66 @@ export default function QuizPageUI({
     setShowInfoUI(true);
   }
   async function handleFinishEditingQuiz() {
-    await updateQuiz(quiz.id, quizName, quizDescription, quiz.isPublic, quiz.lockAnswersAutomatically);
+    await updateQuiz(
+      quiz.id,
+      quizName,
+      quizDescription,
+      quiz.isPublic,
+      quiz.lockAnswersAutomatically,
+    );
     setQuiz({
       ...quiz,
       title: quizName,
-      description: quizDescription
+      description: quizDescription,
     });
-    setShowInfoUI(false)
+    setShowInfoUI(false);
   }
   async function setPublishStatus(newStatus: boolean) {
-    await updateQuiz(quiz.id, quiz.title, quiz.description ?? "", newStatus, quiz.lockAnswersAutomatically)
+    await updateQuiz(
+      quiz.id,
+      quiz.title,
+      quiz.description ?? "",
+      newStatus,
+      quiz.lockAnswersAutomatically,
+    );
     setQuiz({
       ...quiz,
-      isPublic: newStatus
-    })
-    setShowConfirmPublishModal(false)
+      isPublic: newStatus,
+    });
+    setShowConfirmPublishModal(false);
   }
   async function toggleLockedFromAnswering() {
-    await updateQuiz(quiz.id, quiz.title, quiz.description ?? "", quiz.isPublic, !quiz.lockAnswersAutomatically)
+    await updateQuiz(
+      quiz.id,
+      quiz.title,
+      quiz.description ?? "",
+      quiz.isPublic,
+      !quiz.lockAnswersAutomatically,
+    );
     setQuiz({
       ...quiz,
-      lockAnswersAutomatically: !quiz.lockAnswersAutomatically
-    })
+      lockAnswersAutomatically: !quiz.lockAnswersAutomatically,
+    });
+  }
+  function handleOpenEditLinksModal() {
+    setShowQuizContactModal(true);
+  }
+  function handleChangeQuizLinkBtn(newStatus: string) {
+    // (q) => q.id === question.id) + 1
+    const index = linkTypes.findIndex(
+      (type) => type.friendlyName === newStatus,
+    );
+
+    setQuizLinks([
+      ...quizLinks,
+      {
+        id: v4(),
+        name: linkTypes[index].icon,
+        type: index,
+        description: "",
+        quizId: quiz.id,
+      },
+    ]);
   }
   return (
     <div
@@ -284,9 +327,17 @@ export default function QuizPageUI({
         ))}
       </div>
       <div className="w-full bg-pink-100 p-8 flex flex-col gap-2">
-        <h2 className="text-2xl">
-          This is the end of {quiz.owner.username}'s BioQuiz
-        </h2>
+        <div className="w-full flex flex-row gap-2">
+          <div className="flex-1 flex flex-col gap-1">
+            <h2 className="text-2xl">
+              This is the end of {quiz.owner.username}'s BioQuiz
+            </h2>
+          </div>
+          <Button onClick={handleOpenEditLinksModal}>
+            <PencilIcon width={16} height={16} />
+            Edit links
+          </Button>
+        </div>
         <div className="flex flex-row gap-2">
           <div className="rounded-2xl flex flex-row gap-2 bg-pink-200 self-start w-fit">
             <div className="rounded-full p-2 bg-pink-300">
@@ -421,30 +472,31 @@ export default function QuizPageUI({
               label="Quiz description"
             />
             <div className="flex flex-row gap-2">
-              
-            
-            <Checkbox
-              checked={quiz.lockAnswersAutomatically}
-              onChange={() => toggleLockedFromAnswering()}
-            />
-            <p>When users answer a question, prevent the answer from being changed</p>
+              <Checkbox
+                checked={quiz.lockAnswersAutomatically}
+                onChange={() => toggleLockedFromAnswering()}
+              />
+              <p>
+                When users answer a question, prevent the answer from being
+                changed
+              </p>
             </div>
-            
+
             <InputInfo
               label="Danger zone"
               icon={<TriangleAlertIcon width={16} height={16} />}
             />
-            {quiz.isPublic ?
+            {quiz.isPublic ? (
               <Button onClick={() => setShowConfirmPublishModal(true)}>
                 <GlobeLockIcon width={16} height={16} />
                 Unpublish
               </Button>
-              :
+            ) : (
               <Button onClick={() => setShowConfirmPublishModal(true)}>
                 <GlobeIcon width={16} height={16} />
                 Publish
               </Button>
-            }
+            )}
 
             <Button onClick={() => setDeleteConfirmModal(true)}>
               <TrashIcon width={16} height={16} />
@@ -461,49 +513,86 @@ export default function QuizPageUI({
       {showConfirmPublishModal && (
         <Overlay>
           <Modal
-            header={
-              <h2 className="text-2xl font-bold">
-                Confirm visibility
-              </h2>
-            }
+            header={<h2 className="text-2xl font-bold">Confirm visibility</h2>}
           >
-            <p>Warning: You're about to make your quiz {quiz.isPublic ? <b>private</b> : <b>public</b>}.</p>
+            <p>
+              Warning: You're about to make your quiz{" "}
+              {quiz.isPublic ? <b>private</b> : <b>public</b>}.
+            </p>
             <p>Are you really sure you want to do this?</p>
             <Button onClick={() => setPublishStatus(!quiz.isPublic)}>
-              <CheckIcon width={16} height={16}/>
+              <CheckIcon width={16} height={16} />
               YESSSSSS
             </Button>
             <Button onClick={() => setShowConfirmPublishModal(false)}>
-              <XIcon width={16} height={16}/>
+              <XIcon width={16} height={16} />
               NAURRRRR
             </Button>
           </Modal>
         </Overlay>
       )}
-      {
-        showDeleteConfirmModal && <Overlay>
+      {showDeleteConfirmModal && (
+        <Overlay>
           <Modal
-            header={
-              <h2 className="text-2xl font-bold">
-                Confirm deletion
-              </h2>
-            }
+            header={<h2 className="text-2xl font-bold">Confirm deletion</h2>}
           >
-            <p>Warning: You're about to <b>delete your quiz</b></p>
-            <p>This is a <b>destructive</b> action! You won't be able to get your quiz back. All your questions, answers, and analytics will disappear.</p>
+            <p>
+              Warning: You're about to <b>delete your quiz</b>
+            </p>
+            <p>
+              This is a <b>destructive</b> action! You won't be able to get your
+              quiz back. All your questions, answers, and analytics will
+              disappear.
+            </p>
             <p>Are you really sure you want to do this?</p>
             <Button onClick={() => deleteQuiz(quiz.id)}>
-              <CheckIcon width={16} height={16}/>
+              <CheckIcon width={16} height={16} />
               yes :')
             </Button>
             <Button onClick={() => setDeleteConfirmModal(false)}>
-              <XIcon width={16} height={16}/>
+              <XIcon width={16} height={16} />
               NO NO NO NO NO
             </Button>
           </Modal>
         </Overlay>
-      }
-    </div>
+      )}
+      {showQuizContactModal && (
+        <Overlay>
+          <Modal
+            header={<h2 className="text-2xl font-bold">Editing quiz links</h2>}
+          >
+            <p>
+              Quiz links allow you to direct your players to where to contact
+              you.
+            </p>
+            <p>Add a quiz link below by clicking Create New Link.</p>
+            {quizLinks.map((quizLink) => (
+              <TextInput
+                icon={
+                  <DynamicIcon
+                    name={linkTypes[quizLink.type].icon}
+                    color="black"
+                    size={20}
+                  />
+                }
+              />
+            ))}
 
+            <select
+              className="flex flex-row gap-2 items-center bg-pink-200 border-pink-300 border-2 p-3 justify-center text-center font-bold hover:bg-pink-300"
+              onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+                handleChangeQuizLinkBtn(e.target.value)
+              }
+              value={quizLinkStatus}
+            >
+              <option value="unset">Create new link</option>
+              {linkTypes.map((type) => (
+                <option value={type.friendlyName}>{type.friendlyName}</option>
+              ))}
+            </select>
+          </Modal>
+        </Overlay>
+      )}
+    </div>
   );
 }
