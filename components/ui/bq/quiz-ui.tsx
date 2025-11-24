@@ -5,7 +5,7 @@ import { DynamicIcon } from "lucide-react/dynamic";
 import Image from "next/image";
 import { Option, Profile, Quiz, QuizLink } from "@prisma/client";
 import { QuizWithPublicInfo } from "@/lib/types";
-import QuizLink from "./quiz-link";
+import QuizLinkComponent from "./quiz-link";
 import { linkTypes } from "@/lib/constants";
 import QuestionCard from "./question-card";
 import {
@@ -17,6 +17,7 @@ import {
   PenIcon,
   PhoneIcon,
   PlusIcon,
+  SaveIcon,
   TableOfContentsIcon,
   TextCursorIcon,
   TrashIcon,
@@ -36,12 +37,14 @@ import {
   updateQuestion,
   updateQuiz,
   deleteQuiz,
+  updateQuizLinks,
 } from "@/lib/actions";
 import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
 import InputInfo from "../input-info";
 import TextareaInput from "../textarea-input";
 import Checkbox from "../checkbox";
+import QuizExtendedLink from "./quiz-extended-link";
 
 export default function QuizPageUI({
   quiz: quizDb,
@@ -236,10 +239,13 @@ export default function QuizPageUI({
     });
   }
   function handleOpenEditLinksModal() {
+    setQuizLinks(quiz.links);
     setShowQuizContactModal(true);
   }
   function handleChangeQuizLinkBtn(newStatus: string) {
-    // (q) => q.id === question.id) + 1
+    if (newStatus === "Create a link") {
+      return;
+    }
     const index = linkTypes.findIndex(
       (type) => type.friendlyName === newStatus,
     );
@@ -254,6 +260,28 @@ export default function QuizPageUI({
         quizId: quiz.id,
       },
     ]);
+  }
+  function handleChangeQuizLinkText(id: string, newText: string) {
+    const nextQuizLinks = quizLinks.map((link) => {
+      if (link.id === id) {
+        return {
+          ...link,
+          description: newText,
+        };
+      } else {
+        return link;
+      }
+    });
+    setQuizLinks(nextQuizLinks);
+  }
+  async function handleSaveQuizLinks() {
+    await updateQuizLinks(quiz.id, quizLinks);
+    setQuiz({
+      ...quiz,
+      links: quizLinks,
+    });
+    setQuizLinks([]);
+    setShowQuizContactModal(false);
   }
   return (
     <div
@@ -288,13 +316,13 @@ export default function QuizPageUI({
         <div className="flex flex-row gap-4 items-center">
           {quiz.links &&
             quiz.links.map((link) => (
-              <QuizLink href={link.description}>
+              <QuizLinkComponent href={link.description}>
                 <DynamicIcon
                   name={linkTypes[link.type].icon}
                   color="black"
                   size={20}
                 />
-              </QuizLink>
+              </QuizLinkComponent>
             ))}
         </div>
       </div>
@@ -339,22 +367,19 @@ export default function QuizPageUI({
           </Button>
         </div>
         <div className="flex flex-row gap-2">
-          <div className="rounded-2xl flex flex-row gap-2 bg-pink-200 self-start w-fit">
-            <div className="rounded-full p-2 bg-pink-300">
-              <MailIcon width={16} height={16} />
-            </div>
-            <div className="flex flex-row gap-2 items-center mr-2">
-              <b>Email</b> <p>(admin@example.com)</p>
-            </div>
-          </div>
-          <div className="rounded-2xl flex flex-row gap-2 bg-pink-200 self-start w-fit">
-            <div className="rounded-full p-2 bg-pink-300">
-              <PhoneIcon width={16} height={16} />
-            </div>
-            <div className="flex flex-row gap-2 items-center mr-2">
-              <b>Phone</b> <p>(888-555-1234)</p>
-            </div>
-          </div>
+          {quiz.links.map((link) => (
+            <QuizExtendedLink
+              icon={
+                <DynamicIcon
+                  name={linkTypes[link.type].icon}
+                  color="black"
+                  size={20}
+                />
+              }
+              friendlyName={linkTypes[link.type].friendlyName}
+              description={link.description}
+            />
+          ))}
         </div>
         <p>Create your own BioQuiz</p>
       </div>
@@ -575,6 +600,11 @@ export default function QuizPageUI({
                     size={20}
                   />
                 }
+                label={linkTypes[quizLink.type].friendlyName}
+                onChange={(e) =>
+                  handleChangeQuizLinkText(quizLink.id, e.target.value)
+                }
+                value={quizLink.description}
               />
             ))}
 
@@ -590,6 +620,10 @@ export default function QuizPageUI({
                 <option value={type.friendlyName}>{type.friendlyName}</option>
               ))}
             </select>
+            <Button onClick={handleSaveQuizLinks}>
+              <SaveIcon width={16} height={16} />
+              Save and finish
+            </Button>
           </Modal>
         </Overlay>
       )}

@@ -1,6 +1,6 @@
 "use server";
 
-import { Option, Quiz } from "@prisma/client";
+import { Option, Quiz, QuizLink } from "@prisma/client";
 import { prisma } from "./db";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
@@ -139,6 +139,17 @@ export async function updateQuiz(id: string, title: string, description: string,
     }
   })
   return updatedQuiz
+}
+export async function updateQuizLinks(id: string, quizLinks: QuizLink[]) {
+  await prisma.quizLink.deleteMany({
+    where: {
+      quizId: id
+    }
+  })
+  const createdQuizLinks = await prisma.quizLink.createMany({
+    data: quizLinks
+  })
+  return createdQuizLinks
 }
 export async function deleteQuiz(id: string) {
   await prisma.quiz.delete({
