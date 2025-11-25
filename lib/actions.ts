@@ -119,7 +119,7 @@ export async function createQuiz() {
         profileId: currentUser.userId
       }
     })
-    redirect(`/${quiz.id}`)
+    redirect(`/quizzes/${quiz.id}`)
     return quiz
   } else {
     return;
@@ -157,7 +157,7 @@ export async function deleteQuiz(id: string) {
       id: id
     }
   })
-  revalidatePath(`/${id}`)
+  revalidatePath(`/quizzes/${id}`)
   redirect("/dashboard")
 }
 
@@ -173,6 +173,6 @@ export async function createComment(questionId: string, commentText: string, qui
   })
   console.log("hjbhjbjh")
   console.log(quizId)
-  revalidatePath(`/${quizId}`)
-  redirect(`/${quizId}`)
+  revalidatePath(`/quizzes/${quizId}`)
+  redirect(`/quizzes/${quizId}`)
 }
