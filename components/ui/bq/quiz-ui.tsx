@@ -73,6 +73,9 @@ export default function QuizPageUI({
 
   const currentUser = useUser();
 
+  
+  console.log(quiz)
+  
   function handleOptionTextChanged(id: string, newName: string) {
     const nextOptions = options.map((option) => {
       if (option.id === id) {
@@ -351,6 +354,9 @@ export default function QuizPageUI({
             handleAnswer={(answer) => handleAnswer(answer)}
             lockedFromAnsweringDb={quiz.lockAnswersAutomatically}
             answered={question.answered}
+            questionId={question.id}
+            comments={question.comments}
+            quizId={quiz.id}
           />
         ))}
       </div>
@@ -501,10 +507,14 @@ export default function QuizPageUI({
                 checked={quiz.lockAnswersAutomatically}
                 onChange={() => toggleLockedFromAnswering()}
               />
-              <p>
-                When users answer a question, prevent the answer from being
-                changed
-              </p>
+              <div className="flex flex-col">
+                <p className="font-bold">
+                  When users answer a question, prevent the answer from being
+                  changed
+                </p>
+                <p>Requires users to sign in to play your quiz.</p>
+              </div>
+              
             </div>
 
             <InputInfo

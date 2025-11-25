@@ -11,7 +11,10 @@ import { Profile } from "@prisma/client";
 import { icons } from "@/lib/constants";
 import Button from "../button";
 import { useUser } from "@clerk/nextjs";
-import { OptionWithPublicInfo } from "@/lib/types";
+import { CommentWithPublicInfo, OptionWithPublicInfo } from "@/lib/types";
+import CommentTextbox from "./comment-textbox";
+import { createComment } from "@/lib/actions";
+import Comment from "./comment";
 
 export default function QuestionCard({
   number,
@@ -25,29 +28,33 @@ export default function QuestionCard({
   onEdit,
   canEdit,
   answered,
+  questionId,
+  quizId,
 }: {
   number: number;
   questionName: string;
   options: OptionWithPublicInfo[];
   correctAnswer: string;
   correctExplanation: string;
-  comments?: null;
+  comments?: CommentWithPublicInfo[];
   lockedFromAnsweringDb: boolean;
   handleAnswer: (answer: string) => void;
   onEdit: () => void;
   canEdit: boolean;
   answered: Profile[];
+  questionId: string;
+  quizId: string;
 }) {
   const [selAnswer, setSelAnswer] = useState("");
   const user = useUser();
   const loaded = useRef(false);
-  
+
   useEffect(() => {
     if (loaded.current) return;
     if (!user.isLoaded) return;
-    console.log("dksfjlsk")
+    console.log("dksfjlsk");
     options.forEach((option) => {
-      console.log(user)
+      console.log(user);
       if (
         option.answered.findIndex(
           (profile: Profile) => profile.id === (user.user?.id as string),
@@ -56,10 +63,8 @@ export default function QuestionCard({
         setSelAnswer(option.id);
       }
     });
-    loaded.current = true
+    loaded.current = true;
   }, [user]);
-
-  console.log("boop", answered);
 
   function handleSelectAnswer(optionId: string) {
     handleAnswer(optionId);
@@ -140,28 +145,30 @@ export default function QuestionCard({
           )}
         </div>
       )}
-      <div className="w-full flex flex-col gap-2 p-4">
-        <div className="w-full flex flex-row gap-2 items-center">
-          <MessageSquareIcon width={16} height={16} />
-          <h3>Comments</h3>
-          <p className="text-pink-400">Only users logged in can comment</p>
-        </div>
-        <div className="flex flex-col gap-2">
-          <div className="flex flex-row gap-2 bg-pink-200 p-4 rounded-sm">
-            <Image
-              src="https://ui-avatars.com/api/?name=John+Doe"
-              alt="Profile picture"
-              width={32}
-              height={32}
-              className="rounded-sm w-8 h-8"
-            />
-            <div className="flex flex-col gap-2">
-              <b>John Doe</b>
-              <p>This is a comment</p>
-            </div>
+      {selAnswer !== "" && (
+        <div className="w-full flex flex-col gap-2 p-4">
+          <div className="w-full flex flex-row gap-2 items-center">
+            <MessageSquareIcon width={16} height={16} />
+            <h3>Comments</h3>
+            <p className="text-pink-400">Only users logged in can comment</p>
           </div>
+          <CommentTextbox
+            profilePicture={user.user?.imageUrl as string}
+            onSubmit={(contents) => createComment(questionId, contents, quizId)}
+          />
+          {comments && (
+            <div className="flex flex-col gap-2">
+              {comments.map((comment) => (
+                <Comment
+                  profilePicture={comment.user.profilePicture as string}
+                  username={comment.user.username}
+                  contents={comment.contents}
+                />
+              ))}
+            </div>
+          )}
         </div>
-      </div>
+      )}
     </div>
   );
 }

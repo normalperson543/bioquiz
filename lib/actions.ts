@@ -160,3 +160,19 @@ export async function deleteQuiz(id: string) {
   revalidatePath(`/${id}`)
   redirect("/dashboard")
 }
+
+export async function createComment(questionId: string, commentText: string, quizId: string) {
+  const user = await auth()
+
+  await prisma.comment.create({
+    data: {
+      questionId: questionId,
+      contents: commentText,
+      profileId: user.userId as string
+    }
+  })
+  console.log("hjbhjbjh")
+  console.log(quizId)
+  revalidatePath(`/${quizId}`)
+  redirect(`/${quizId}`)
+}

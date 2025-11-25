@@ -15,6 +15,11 @@ export async function getQuiz(id: string) {
               answered: true
             }
           },
+          comments: {
+            include: {
+              user: true
+            }
+          },
           answered: true
         },
         orderBy: {

@@ -11,6 +11,11 @@ export type QuizWithPublicInfo = Prisma.QuizGetPayload<{
             answered: true
           }
         },
+        comments: {
+          include: {
+            user: true
+          }
+        },
         answered: true
       };
     };
@@ -20,5 +25,11 @@ export type QuizWithPublicInfo = Prisma.QuizGetPayload<{
 export type OptionWithPublicInfo = Prisma.OptionGetPayload<{
   include: {
     answered: true
+  }
+}>
+
+export type CommentWithPublicInfo = Prisma.CommentGetPayload<{
+  include: {
+    user: true
   }
 }>

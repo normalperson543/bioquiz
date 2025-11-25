@@ -8,17 +8,17 @@ datasource db {
 }
 
 model Quiz {
-  id          String     @id @unique @default(uuid())
-  questions   Question[]
-  owner       Profile    @relation(fields: [profileId], references: [id])
-  profileId   String
-  description String?
-  links       QuizLink[]
-  title       String     @default("Untitled quiz")
-  dateCreated DateTime   @default(now())
-  isPublic    Boolean    @default(false)
-  datePublished DateTime?
-  lockAnswersAutomatically Boolean @default(false)
+  id                       String     @id @unique @default(uuid())
+  questions                Question[]
+  owner                    Profile    @relation(fields: [profileId], references: [id])
+  profileId                String
+  description              String?
+  links                    QuizLink[]
+  title                    String     @default("Untitled quiz")
+  dateCreated              DateTime   @default(now())
+  isPublic                 Boolean    @default(false)
+  datePublished            DateTime?
+  lockAnswersAutomatically Boolean    @default(false)
 }
 
 model QuizLink {
@@ -40,28 +40,42 @@ model Option {
 }
 
 model Question {
-  id                String    @id @unique @default(uuid())
-  quiz              Quiz      @relation(fields: [quizId], references: [id])
-  questionName      String
-  options           Option[]
-  answered          Profile[] @relation("answeredQuestions")
-  dateCreated       DateTime  @default(now())
+  id           String    @id @unique @default(uuid())
+  quiz         Quiz      @relation(fields: [quizId], references: [id])
+  questionName String
+  options      Option[]
+  answered     Profile[] @relation("answeredQuestions")
+  dateCreated  DateTime  @default(now())
 
   correctAnswer            String
   correctAnswerExplanation String
   quizId                   String
+  comments                 Comment[]
 }
 
 model Profile {
-  id                String   @id @unique
-  username          String
-  profilePicture    String?
-  dateCreated       DateTime @default(now())
-  quizzes           Quiz[]
-  description       String?
-  email             String   @default("you@example.com")
+  id             String   @id @unique
+  username       String
+  profilePicture String?
+  dateCreated    DateTime @default(now())
+  quizzes        Quiz[]
+  description    String?
+  email          String   @default("you@example.com")
+  isBanned       Boolean  @default(false)
 
-  answeredQuestions          Question[] @relation("answeredQuestions")
-  Option                     Option?    @relation(fields: [optionId], references: [id])
-  optionId                   String?
+  answeredQuestions Question[] @relation("answeredQuestions")
+  options           Option?    @relation(fields: [optionId], references: [id])
+  optionId          String?
+  comments          Comment[]
+}
+
+model Comment {
+  id          String   @id @unique @default(uuid())
+  user        Profile  @relation(fields: [profileId], references: [id])
+  question    Question @relation(fields: [questionId], references: [id])
+  contents    String
+  dateCreated DateTime @default(now())
+
+  profileId  String
+  questionId String
 }
