@@ -1,6 +1,6 @@
 "use server";
 
-import { Option, Quiz, QuizLink } from "@prisma/client";
+import { Option, QuizLink } from "@prisma/client";
 import { prisma } from "./db";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
@@ -175,4 +175,12 @@ export async function createComment(questionId: string, commentText: string, qui
   console.log(quizId)
   revalidatePath(`/quizzes/${quizId}`)
   redirect(`/quizzes/${quizId}`)
+}
+export async function deleteQuestion(questionId: string) {
+  const question = await prisma.question.delete({
+    where: {
+      id: questionId
+    }
+  })
+  return question
 }

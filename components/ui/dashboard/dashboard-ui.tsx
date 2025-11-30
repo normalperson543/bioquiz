@@ -1,11 +1,6 @@
 import { comingSoon } from "@/lib/fonts";
 import {
-  EditIcon,
-  FileCheckIcon,
-  GlobeLockIcon,
-  PlayIcon,
   PlusIcon,
-  TrashIcon,
 } from "lucide-react";
 import Button from "../button";
 import { createQuiz } from "@/lib/actions";
@@ -32,9 +27,7 @@ export default function DashboardUI({ username, createdQuizzes }: { username: st
       <div className="flex flex-col p-4">
         <h2 className="text-2xl font-bold">my quizzes</h2>
         {createdQuizzes.map((quiz) =>
-        
-        
-          <QuizResult id={quiz.id} name={quiz.title} creationDate={quiz.dateCreated}/>)}
+          <QuizResult id={quiz.id} name={quiz.title} creationDate={quiz.dateCreated} key={quiz.id}/>)}
       </div>
     </div>
   );

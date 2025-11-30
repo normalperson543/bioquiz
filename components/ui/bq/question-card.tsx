@@ -5,7 +5,6 @@ import {
   PencilIcon,
   XIcon,
 } from "lucide-react";
-import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import { Profile } from "@prisma/client";
 import { icons } from "@/lib/constants";
@@ -55,6 +54,7 @@ export default function QuestionCard({
     console.log("dksfjlsk");
     options.forEach((option) => {
       console.log(user);
+      console.log(option)
       if (
         option.answered.findIndex(
           (profile: Profile) => profile.id === (user.user?.id as string),
@@ -152,10 +152,14 @@ export default function QuestionCard({
             <h3>Comments</h3>
             <p className="text-pink-400">Only users logged in can comment</p>
           </div>
-          <CommentTextbox
-            profilePicture={user.user?.imageUrl as string}
-            onSubmit={(contents) => createComment(questionId, contents, quizId)}
-          />
+          {user.isSignedIn && (
+            <CommentTextbox
+              profilePicture={user.user?.imageUrl as string}
+              onSubmit={(contents) =>
+                createComment(questionId, contents, quizId)
+              }
+            />
+          )}
           {comments && (
             <div className="flex flex-col gap-2">
               {comments.map((comment) => (

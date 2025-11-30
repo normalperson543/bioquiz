@@ -3,19 +3,18 @@
 import { comingSoon } from "@/lib/fonts";
 import { DynamicIcon } from "lucide-react/dynamic";
 import Image from "next/image";
-import { Option, Profile, Quiz, QuizLink } from "@prisma/client";
+import { Option, QuizLink } from "@prisma/client";
 import { QuizWithPublicInfo } from "@/lib/types";
 import QuizLinkComponent from "./quiz-link";
 import { linkTypes } from "@/lib/constants";
 import QuestionCard from "./question-card";
 import {
+  ArrowRightIcon,
   CheckIcon,
   GlobeIcon,
   GlobeLockIcon,
-  MailIcon,
   PencilIcon,
   PenIcon,
-  PhoneIcon,
   PlusIcon,
   SaveIcon,
   TableOfContentsIcon,
@@ -38,6 +37,7 @@ import {
   updateQuiz,
   deleteQuiz,
   updateQuizLinks,
+  deleteQuestion,
 } from "@/lib/actions";
 import Link from "next/link";
 import { useUser } from "@clerk/nextjs";
@@ -69,13 +69,11 @@ export default function QuizPageUI({
   const [showDeleteConfirmModal, setDeleteConfirmModal] = useState(false);
   const [showQuizContactModal, setShowQuizContactModal] = useState(false);
   const [quizLinks, setQuizLinks] = useState<QuizLink[]>([]);
-  const [quizLinkStatus, setQuizLinkStatus] = useState("unset");
 
   const currentUser = useUser();
 
-  
-  console.log(quiz)
-  
+  console.log(quiz);
+
   function handleOptionTextChanged(id: string, newName: string) {
     const nextOptions = options.map((option) => {
       if (option.id === id) {
@@ -105,7 +103,7 @@ export default function QuizPageUI({
     setShowAddQuestionUI(true);
     editingQuestion.current = v4();
   }
-  function handleDeleteQuestion(id: string) {
+  function handleDeleteOption(id: string) {
     console.log("test");
     console.log(options);
     console.log(id);
@@ -286,6 +284,17 @@ export default function QuizPageUI({
     setQuizLinks([]);
     setShowQuizContactModal(false);
   }
+  async function handleDeleteQuestion() {
+    await deleteQuestion(editingQuestion.current);
+    setQuiz({
+      ...quiz,
+      questions: quiz.questions.filter((q) => q.id !== editingQuestion.current),
+    });
+    setShowAddQuestionUI(false);
+  }
+
+  console.log("rerender sdkgjlskgj");
+  console.log(options);
   return (
     <div
       className={`w-full h-full bg-pink-50 text-black ${comingSoon.className}`}
@@ -319,7 +328,7 @@ export default function QuizPageUI({
         <div className="flex flex-row gap-4 items-center">
           {quiz.links &&
             quiz.links.map((link) => (
-              <QuizLinkComponent href={link.description}>
+              <QuizLinkComponent key={link.id}>
                 <DynamicIcon
                   name={linkTypes[link.type].icon}
                   color="black"
@@ -357,14 +366,15 @@ export default function QuizPageUI({
             questionId={question.id}
             comments={question.comments}
             quizId={quiz.id}
+            key={question.id}
           />
         ))}
       </div>
       <div className="w-full bg-pink-100 p-8 flex flex-col gap-2">
         <div className="w-full flex flex-row gap-2">
           <div className="flex-1 flex flex-col gap-1">
-            <h2 className="text-2xl">
-              This is the end of {quiz.owner.username}'s BioQuiz
+            <h2 className="text-2xl font-bold">
+              This is the end of {quiz.owner.username}&apos;s BioQuiz
             </h2>
           </div>
           <Button onClick={handleOpenEditLinksModal}>
@@ -384,10 +394,19 @@ export default function QuizPageUI({
               }
               friendlyName={linkTypes[link.type].friendlyName}
               description={link.description}
+              key={link.id}
             />
           ))}
         </div>
-        <p>Create your own BioQuiz</p>
+        <h3 className="text-xl font-bold">Create your own BioQuiz</h3>
+        <div className="flex flex-row gap-2 items-start">
+          <Link href="/dashboard">
+            <Button>
+              <ArrowRightIcon width={16} height={16} />
+              Create a quiz like this
+            </Button>
+          </Link>
+        </div>
       </div>
       {showAddQuestionUI && (
         <Overlay>
@@ -453,7 +472,7 @@ export default function QuizPageUI({
                   handleOptionTextChanged(option.id, e.target.value)
                 }
                 optionText={option.name}
-                onDelete={() => handleDeleteQuestion(option.id)}
+                onDelete={() => handleDeleteOption(option.id)}
                 isCorrectAnswer={editingCorrectAnswer !== option.id}
                 onToggleCorrectAnswer={() =>
                   handleToggleCorrectAnswer(option.id)
@@ -469,6 +488,12 @@ export default function QuizPageUI({
               value={correctAnswerExplanation}
               label="Correct answer explanation"
             />
+            {isEditingExistingQuestion && (
+              <Button onClick={handleDeleteQuestion}>
+                <TrashIcon width={16} height={16} />
+                Delete question
+              </Button>
+            )}
             {questionName.length > 0 &&
               options.length >= 2 &&
               options.length <= 5 &&
@@ -514,7 +539,6 @@ export default function QuizPageUI({
                 </p>
                 <p>Requires users to sign in to play your quiz.</p>
               </div>
-              
             </div>
 
             <InputInfo
@@ -623,7 +647,6 @@ export default function QuizPageUI({
               onChange={(e: ChangeEvent<HTMLSelectElement>) =>
                 handleChangeQuizLinkBtn(e.target.value)
               }
-              value={quizLinkStatus}
             >
               <option value="unset">Create new link</option>
               {linkTypes.map((type) => (

@@ -1,5 +1,5 @@
 import DashboardUI from "@/components/ui/dashboard/dashboard-ui";
-import { auth, currentUser } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { getQuizzes } from "@/lib/data";
 

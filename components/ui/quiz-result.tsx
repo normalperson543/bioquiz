@@ -3,8 +3,6 @@ import Button from "./button";
 import {
   FileCheckIcon,
   EditIcon,
-  GlobeLockIcon,
-  TrashIcon,
 } from "lucide-react";
 
 export default function QuizResult({

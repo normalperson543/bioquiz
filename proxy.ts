@@ -1,7 +1,7 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { prisma } from "./lib/db";
 
-const isPublicRoute = createRouteMatcher(["/auth/login(.*)"]);
+const isPublicRoute = createRouteMatcher(["/auth/login(.*)", "/quizzes/(.*)", "/"]);
 
 export default clerkMiddleware(async (auth, req) => {
   const { isAuthenticated, sessionClaims } = await auth();

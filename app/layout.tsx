@@ -1,15 +1,6 @@
 import type { Metadata } from "next";
-import { ThemeProvider } from "next-themes";
 import "./globals.css";
-import { Coming_Soon } from "next/font/google";
-import {
-  ClerkProvider,
-  SignInButton,
-  SignUpButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
-} from "@clerk/nextjs";
+import { ClerkProvider } from "@clerk/nextjs";
 import Header from "@/components/ui/header";
 
 const defaultUrl = process.env.VERCEL_URL
@@ -34,10 +25,10 @@ export default function RootLayout({
       }}
     >
       <html lang="en" suppressHydrationWarning className="w-full h-full">
-        <Header />
-        <div className="pt-16 w-full h-full">
-          <body className="antialiased w-full h-full">{children}</body>
-        </div>
+        <body className="antialiased w-full h-full">
+          <Header />
+          <div className="pt-16 w-full h-full">{children}</div>
+        </body>
       </html>
     </ClerkProvider>
   );
