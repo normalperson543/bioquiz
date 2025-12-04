@@ -10,11 +10,12 @@ import {
   UserButton,
 } from "@clerk/nextjs";
 import Link from "next/link";
+import { createQuiz } from "@/lib/actions";
 export default function Header() {
   return (
     <div className="flex flex-row gap-2 w-full p-2 items-center bg-pink-100 fixed h-16">
       <div className="flex flex-1 flex-row gap-2 w-full items-center ">
-        <Button>
+        <Button onClick={createQuiz}>
           <PlusIcon width={16} height={16} />
           create :D
         </Button>

@@ -27,7 +27,7 @@ export default function HomepageUI() {
           publish!
         </p>
         <p>
-          it's all about expressing what you like and your personality in a
+          it&apos;s all about expressing what you like and your personality in a
           short quiz!
         </p>
         <p>

@@ -106,6 +106,8 @@ export async function updateQuestion(
     },
     include: {
       options: true,
+      answered: true,
+      comments: true
     },
   });
 
@@ -120,9 +122,8 @@ export async function createQuiz() {
       }
     })
     redirect(`/quizzes/${quiz.id}`)
-    return quiz
   } else {
-    return;
+    currentUser.redirectToSignIn({ returnBackUrl: `/dashboard` });
   }
 
 }

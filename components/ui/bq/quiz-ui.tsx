@@ -480,6 +480,7 @@ export default function QuizPageUI({
                 onChangeIcon={(e) =>
                   handleChangeIcon(option.id, Number(e.target.value))
                 }
+                key={option.id}
               />
             ))}
             <TextInput
@@ -575,7 +576,7 @@ export default function QuizPageUI({
             header={<h2 className="text-2xl font-bold">Confirm visibility</h2>}
           >
             <p>
-              Warning: You're about to make your quiz{" "}
+              Warning: You&apos;re about to make your quiz{" "}
               {quiz.isPublic ? <b>private</b> : <b>public</b>}.
             </p>
             <p>Are you really sure you want to do this?</p>
@@ -596,17 +597,17 @@ export default function QuizPageUI({
             header={<h2 className="text-2xl font-bold">Confirm deletion</h2>}
           >
             <p>
-              Warning: You're about to <b>delete your quiz</b>
+              Warning: You&apos;re about to <b>delete your quiz</b>
             </p>
             <p>
-              This is a <b>destructive</b> action! You won't be able to get your
+              This is a <b>destructive</b> action! You won&apos;t be able to get your
               quiz back. All your questions, answers, and analytics will
               disappear.
             </p>
             <p>Are you really sure you want to do this?</p>
             <Button onClick={() => deleteQuiz(quiz.id)}>
               <CheckIcon width={16} height={16} />
-              yes :')
+              yes :&apos;)
             </Button>
             <Button onClick={() => setDeleteConfirmModal(false)}>
               <XIcon width={16} height={16} />
@@ -639,6 +640,7 @@ export default function QuizPageUI({
                   handleChangeQuizLinkText(quizLink.id, e.target.value)
                 }
                 value={quizLink.description}
+                key={quizLink.id}
               />
             ))}
 
@@ -650,7 +652,7 @@ export default function QuizPageUI({
             >
               <option value="unset">Create new link</option>
               {linkTypes.map((type) => (
-                <option value={type.friendlyName}>{type.friendlyName}</option>
+                <option value={type.friendlyName} key={type.friendlyName}>{type.friendlyName}</option>
               ))}
             </select>
             <Button onClick={handleSaveQuizLinks}>

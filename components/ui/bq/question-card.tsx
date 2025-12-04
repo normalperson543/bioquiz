@@ -64,7 +64,7 @@ export default function QuestionCard({
       }
     });
     loaded.current = true;
-  }, [user]);
+  }, [user, options]);
 
   function handleSelectAnswer(optionId: string) {
     handleAnswer(optionId);
@@ -105,6 +105,7 @@ export default function QuestionCard({
                     profile.id === (user.user?.id as string),
                 ) > -1)
             }
+            key={option.id}
           >
             <div
               className={`bg-pink-400 p-1 w-8 h-8 rounded-full ${option.id === selAnswer && "bg-blue-400!"}`}
@@ -167,6 +168,7 @@ export default function QuestionCard({
                   profilePicture={comment.user.profilePicture as string}
                   username={comment.user.username}
                   contents={comment.contents}
+                  key={comment.id}
                 />
               ))}
             </div>
