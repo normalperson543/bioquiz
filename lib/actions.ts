@@ -32,7 +32,17 @@ export async function addQuestion(
       id: questionId,
     },
     include: {
-      options: true,
+      options: {
+        include: {
+          answered: true
+        }
+      },
+      answered: true,
+      comments: {
+        include: {
+          user: true
+        }
+      }
     },
   });
 
@@ -105,9 +115,17 @@ export async function updateQuestion(
       id: questionId,
     },
     include: {
-      options: true,
+      options: {
+        include: {
+          answered: true
+        }
+      },
       answered: true,
-      comments: true
+      comments: {
+        include: {
+          user: true
+        }
+      }
     },
   });
 
@@ -165,17 +183,17 @@ export async function deleteQuiz(id: string) {
 export async function createComment(questionId: string, commentText: string, quizId: string) {
   const user = await auth()
 
-  await prisma.comment.create({
+  const comment = await prisma.comment.create({
     data: {
       questionId: questionId,
       contents: commentText,
       profileId: user.userId as string
+    },
+    include: {
+      user: true
     }
   })
-  console.log("hjbhjbjh")
-  console.log(quizId)
-  revalidatePath(`/quizzes/${quizId}`)
-  redirect(`/quizzes/${quizId}`)
+  return comment
 }
 export async function deleteQuestion(questionId: string) {
   const question = await prisma.question.delete({

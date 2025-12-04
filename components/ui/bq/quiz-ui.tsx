@@ -3,7 +3,7 @@
 import { comingSoon } from "@/lib/fonts";
 import { DynamicIcon } from "lucide-react/dynamic";
 import Image from "next/image";
-import { Option, QuizLink } from "@prisma/client";
+import { Comment, Option, QuizLink } from "@prisma/client";
 import { QuizWithPublicInfo } from "@/lib/types";
 import QuizLinkComponent from "./quiz-link";
 import { linkTypes } from "@/lib/constants";
@@ -292,83 +292,115 @@ export default function QuizPageUI({
     });
     setShowAddQuestionUI(false);
   }
+  function handleAddComment(comment: Comment, questionId: string) {
+    setQuiz({
+      ...quiz,
+      questions: quiz.questions.map((q) => {
+        if (q.id === questionId) {
+          return {
+            ...q,
+            comments: [
+              ...q.comments,
+              comment,
+            ],
+          };
+        } else {
+          return q;
+        }
+      }),
+    });
+    console.log(quiz)
+  }
 
   console.log("rerender sdkgjlskgj");
   console.log(options);
   return (
     <div
-      className={`w-full h-full bg-pink-50 text-black ${comingSoon.className}`}
+      className={`w-full text-black ${comingSoon.className} min-h-screen m-0 flex flex-col`}
     >
-      <div className="flex flex-row gap-2 w-full pl-12 pr-12 pt-16 pb-16 rounded-sm bg-pink-100 items-center">
-        <div className="flex flex-1 flex-row gap-4 items-center">
-          <Image
-            src={
-              quiz.owner.profilePicture ??
-              `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                quiz.owner.username,
-              )}`
-            }
-            alt={`${quiz.owner.username}'s profile picture`}
-            width={64}
-            height={64}
-            className="rounded-sm object-cover w-16 h-16 border-pink-200 border-2"
-          />
-          <div className="flex flex-col gap-2 text-black">
-            <h2 className="text-4xl">{quiz.title}</h2>
-            <p>
-              by{" "}
-              <Link href={`/profile/${quiz.owner.username}`}>
-                @{quiz.owner.username}
-                {quiz.description && "- "}
-              </Link>
-              {quiz.description}
-            </p>
+      <div className="flex-1 w-full h-full">
+        <div className="flex flex-row gap-2 w-full pl-12 pr-12 pt-16 pb-16 rounded-sm bg-pink-100 items-center">
+          <div className="flex flex-1 flex-row gap-4 items-center">
+            <Image
+              src={
+                quiz.owner.profilePicture ??
+                `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                  quiz.owner.username,
+                )}`
+              }
+              alt={`${quiz.owner.username}'s profile picture`}
+              width={64}
+              height={64}
+              className="rounded-sm object-cover w-16 h-16 border-pink-200 border-2"
+            />
+            <div className="flex flex-col gap-2 text-black">
+              <h2 className="text-4xl">{quiz.title}</h2>
+              <p>
+                by{" "}
+                <Link href={`/profile/${quiz.owner.username}`}>
+                  @{quiz.owner.username}
+                  {quiz.description && "- "}
+                </Link>
+                {quiz.description}
+              </p>
+            </div>
+          </div>
+          <div className="flex flex-row gap-4 items-center">
+            {quiz.links &&
+              quiz.links.map((link) => (
+                <QuizLinkComponent key={link.id} hover={
+                  <p>{link.description}</p>
+                }>
+                  <DynamicIcon
+                    // @ts-expect-error Afaik there isn't type for the DynamicIcon name attribute sadly
+                    name={linkTypes[link.type].icon} //
+                    color="black"
+                    size={20}
+                  />
+                </QuizLinkComponent>
+              ))}
           </div>
         </div>
-        <div className="flex flex-row gap-4 items-center">
-          {quiz.links &&
-            quiz.links.map((link) => (
-              <QuizLinkComponent key={link.id}>
-                <DynamicIcon
-                  name={linkTypes[link.type].icon}
-                  color="black"
-                  size={20}
-                />
-              </QuizLinkComponent>
-            ))}
+        {currentUser.user?.id === quiz.owner.id && (
+          <div className="pt-4 pb-4 pl-12 pr-12 flex flex-row items-center gap-2 bg-orange-200">
+            <Button onClick={handleAddQuestion}>
+              <PlusIcon width={16} height={16} />
+              Add question
+            </Button>
+            <Button onClick={handleOpenInfoModal}>
+              <PenIcon width={16} height={16} />
+              Change info
+            </Button>
+          </div>
+        )}
+        {quiz.questions.length === 0 && (
+          <div className="flex flex-col gap-2 items-center justify-center w-full h-full m-10 p-5 bg-pink-50 border-2 border-dashed border-pink-100">
+            <h2 className="text-2xl">
+              There are no questions inside this quiz.
+            </h2>
+          </div>
+        )}
+        <div className="p-8 flex flex-col gap-6">
+          {quiz.questions.map((question, i) => (
+            <QuestionCard
+              number={quiz.questions.findIndex((q) => q.id === question.id) + 1}
+              questionName={question.questionName}
+              options={question.options} //golly we need to find a better way to do this
+              correctAnswer={question.correctAnswer}
+              correctExplanation={question.correctAnswerExplanation}
+              onEdit={() => handleEditQuestion(i)}
+              canEdit={currentUser.user?.id === quiz.owner.id}
+              handleAnswer={(answer) => handleAnswer(answer)}
+              lockedFromAnsweringDb={quiz.lockAnswersAutomatically}
+              answered={question.answered}
+              questionId={question.id}
+              comments={question.comments}
+              quizId={quiz.id}
+              key={question.id}
+              onAddComment={(comment) => handleAddComment(comment, question.id)}
+            />
+          ))}
         </div>
-      </div>
-      {currentUser.user?.id === quiz.owner.id && (
-        <div className="pt-4 pb-4 pl-12 pr-12 flex flex-row items-center gap-2 bg-orange-200">
-          <Button onClick={handleAddQuestion}>
-            <PlusIcon width={16} height={16} />
-            Add question
-          </Button>
-          <Button onClick={handleOpenInfoModal}>
-            <PenIcon width={16} height={16} />
-            Change info
-          </Button>
-        </div>
-      )}
-      <div className="p-8 flex flex-col gap-6">
-        {quiz.questions.map((question, i) => (
-          <QuestionCard
-            number={quiz.questions.findIndex((q) => q.id === question.id) + 1}
-            questionName={question.questionName}
-            options={question.options} //golly we need to find a better way to do this
-            correctAnswer={question.correctAnswer}
-            correctExplanation={question.correctAnswerExplanation}
-            onEdit={() => handleEditQuestion(i)}
-            canEdit={currentUser.user?.id === quiz.owner.id}
-            handleAnswer={(answer) => handleAnswer(answer)}
-            lockedFromAnsweringDb={quiz.lockAnswersAutomatically}
-            answered={question.answered}
-            questionId={question.id}
-            comments={question.comments}
-            quizId={quiz.id}
-            key={question.id}
-          />
-        ))}
       </div>
       <div className="w-full bg-pink-100 p-8 flex flex-col gap-2">
         <div className="w-full flex flex-row gap-2">
@@ -387,6 +419,7 @@ export default function QuizPageUI({
             <QuizExtendedLink
               icon={
                 <DynamicIcon
+                  // @ts-expect-error Afaik there isn't type for the DynamicIcon name attribute sadly
                   name={linkTypes[link.type].icon}
                   color="black"
                   size={20}
@@ -407,6 +440,17 @@ export default function QuizPageUI({
             </Button>
           </Link>
         </div>
+        <p>
+          This quiz was created by {quiz.owner.username} and BioQuiz does not
+          endorse the content in the quiz above. To report an offensive quiz,{" "}
+          <Link
+            href="mailto:bioquiz@octotwelve.xyz"
+            className="underline font-bold"
+          >
+            contact us
+          </Link>
+          .
+        </p>
       </div>
       {showAddQuestionUI && (
         <Overlay>
@@ -480,6 +524,7 @@ export default function QuizPageUI({
                 onChangeIcon={(e) =>
                   handleChangeIcon(option.id, Number(e.target.value))
                 }
+                icon={option.icon}
                 key={option.id}
               />
             ))}
@@ -600,8 +645,8 @@ export default function QuizPageUI({
               Warning: You&apos;re about to <b>delete your quiz</b>
             </p>
             <p>
-              This is a <b>destructive</b> action! You won&apos;t be able to get your
-              quiz back. All your questions, answers, and analytics will
+              This is a <b>destructive</b> action! You won&apos;t be able to get
+              your quiz back. All your questions, answers, and analytics will
               disappear.
             </p>
             <p>Are you really sure you want to do this?</p>
@@ -630,6 +675,7 @@ export default function QuizPageUI({
               <TextInput
                 icon={
                   <DynamicIcon
+                    // @ts-expect-error Afaik there isn't type for the DynamicIcon name attribute sadly
                     name={linkTypes[quizLink.type].icon}
                     color="black"
                     size={20}
@@ -652,7 +698,9 @@ export default function QuizPageUI({
             >
               <option value="unset">Create new link</option>
               {linkTypes.map((type) => (
-                <option value={type.friendlyName} key={type.friendlyName}>{type.friendlyName}</option>
+                <option value={type.friendlyName} key={type.friendlyName}>
+                  {type.friendlyName}
+                </option>
               ))}
             </select>
             <Button onClick={handleSaveQuizLinks}>

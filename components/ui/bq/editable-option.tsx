@@ -17,7 +17,7 @@ export default function EditableOption({
   onChangeOptionText: (e: ChangeEvent<HTMLInputElement>) => void;
   optionText: string;
   onDelete: () => void;
-  icon: number;
+  icon?: number | null;
   onChangeIcon: (e: ChangeEvent<HTMLSelectElement>) => void;
   isCorrectAnswer: boolean;
   onToggleCorrectAnswer: () => void;
@@ -28,7 +28,7 @@ export default function EditableOption({
       <select
         className="border-2 border-pink-200 bg-pink-100"
         onChange={onChangeIcon}
-        value={icon}
+        value={icon ?? 0}
       >
         {icons.map((icon, i) => (
           <option value={i} key={i}>

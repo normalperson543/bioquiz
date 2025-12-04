@@ -6,7 +6,7 @@ import {
   XIcon,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
-import { Profile } from "@prisma/client";
+import { Comment as CommentType, Profile } from "@prisma/client";
 import { icons } from "@/lib/constants";
 import Button from "../button";
 import { useUser } from "@clerk/nextjs";
@@ -29,6 +29,7 @@ export default function QuestionCard({
   answered,
   questionId,
   quizId,
+  onAddComment,
 }: {
   number: number;
   questionName: string;
@@ -43,6 +44,7 @@ export default function QuestionCard({
   answered: Profile[];
   questionId: string;
   quizId: string;
+  onAddComment: (comment: CommentType) => void;
 }) {
   const [selAnswer, setSelAnswer] = useState("");
   const user = useUser();
@@ -54,7 +56,7 @@ export default function QuestionCard({
     console.log("dksfjlsk");
     options.forEach((option) => {
       console.log(user);
-      console.log(option)
+      console.log(option);
       if (
         option.answered.findIndex(
           (profile: Profile) => profile.id === (user.user?.id as string),
@@ -72,7 +74,7 @@ export default function QuestionCard({
   }
 
   return (
-    <div className="w-full rounded-sm bg-pink-100">
+    <div className="w-full bg-pink-100">
       <div className="w-full rounded-t-sm p-4 bg-pink-200 flex flex-row gap-4 items-center">
         <div className="flex flex-row gap-2 flex-1">
           <div className="rounded-full bg-pink-300 p-2">
@@ -95,7 +97,7 @@ export default function QuestionCard({
         </div>
         {options.map((option) => (
           <button
-            className={`w-full p-4 flex flex-row justify-start rounded-full border border-pink-400 bg-pink-300 hover:bg-pink-400 items-center gap-2 ${option.id === selAnswer && "border-blue-400! bg-blue-300! hover:bg-blue-400!"}`}
+            className={`w-full p-4 flex flex-row justify-start rounded-full border border-pink-300 bg-pink-200 hover:bg-pink-300 items-center gap-2 ${option.id === selAnswer && "border-blue-300! bg-blue-200! hover:bg-blue-300!"}`}
             onClick={() => handleSelectAnswer(option.id)}
             disabled={
               lockedFromAnsweringDb &&
@@ -108,7 +110,7 @@ export default function QuestionCard({
             key={option.id}
           >
             <div
-              className={`bg-pink-400 p-1 w-8 h-8 rounded-full ${option.id === selAnswer && "bg-blue-400!"}`}
+              className={`bg-pink-300 p-1 w-8 h-8 rounded-full ${option.id === selAnswer && "bg-blue-400!"}`}
             >
               {icons[Number(option.icon ?? 0)]}
             </div>
@@ -156,9 +158,10 @@ export default function QuestionCard({
           {user.isSignedIn && (
             <CommentTextbox
               profilePicture={user.user?.imageUrl as string}
-              onSubmit={(contents) =>
-                createComment(questionId, contents, quizId)
-              }
+              onSubmit={async (contents) => {
+                const comment = await createComment(questionId, contents, quizId);
+                onAddComment(comment)
+              }}
             />
           )}
           {comments && (
