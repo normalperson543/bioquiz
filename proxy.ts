@@ -1,7 +1,11 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { prisma } from "./lib/db";
 
-const isPublicRoute = createRouteMatcher(["/auth/login(.*)", "/quizzes/(.*)", "/"]);
+const isPublicRoute = createRouteMatcher([
+  "/auth/login(.*)",
+  "/quizzes/(.*)",
+  "/",
+]);
 
 export default clerkMiddleware(async (auth, req) => {
   const { isAuthenticated, sessionClaims } = await auth();
@@ -11,12 +15,12 @@ export default clerkMiddleware(async (auth, req) => {
         id: sessionClaims.userId as string,
       },
       update: {
-        profilePicture: sessionClaims.image_url
+        profilePicture: sessionClaims.image_url,
       },
       create: {
         id: sessionClaims.userId as string,
-        username: sessionClaims.username
-      }
+        username: sessionClaims.username,
+      },
     });
   }
 

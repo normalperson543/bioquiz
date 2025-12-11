@@ -1,5 +1,5 @@
 @layer clerk;
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @plugin 'tailwindcss-animate';
 

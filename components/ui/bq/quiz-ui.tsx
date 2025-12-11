@@ -3,8 +3,8 @@
 import { comingSoon } from "@/lib/fonts";
 import { DynamicIcon } from "lucide-react/dynamic";
 import Image from "next/image";
-import { Comment, Option, QuizLink } from "@prisma/client";
-import { QuizWithPublicInfo } from "@/lib/types";
+import { Option, QuizLink } from "@prisma/client";
+import { CommentWithPublicInfo, QuizWithPublicInfo } from "@/lib/types";
 import QuizLinkComponent from "./quiz-link";
 import { linkTypes } from "@/lib/constants";
 import QuestionCard from "./question-card";
@@ -72,8 +72,6 @@ export default function QuizPageUI({
 
   const currentUser = useUser();
 
-  console.log(quiz);
-
   function handleOptionTextChanged(id: string, newName: string) {
     const nextOptions = options.map((option) => {
       if (option.id === id) {
@@ -104,9 +102,6 @@ export default function QuizPageUI({
     editingQuestion.current = v4();
   }
   function handleDeleteOption(id: string) {
-    console.log("test");
-    console.log(options);
-    console.log(id);
     setOptions(options.filter((option) => option.id !== id));
   }
 
@@ -121,7 +116,6 @@ export default function QuizPageUI({
         quiz.id,
       );
       if (!question) {
-        console.error("whoops");
         return;
       }
       const nextQuestions = quiz.questions.map((q) => {
@@ -147,7 +141,6 @@ export default function QuizPageUI({
       quiz.id,
     );
     if (!question) {
-      console.error("whoops");
       return;
     }
     setQuiz({
@@ -292,28 +285,24 @@ export default function QuizPageUI({
     });
     setShowAddQuestionUI(false);
   }
-  function handleAddComment(comment: Comment, questionId: string) {
+  function handleAddComment(
+    comment: CommentWithPublicInfo,
+    questionId: string,
+  ) {
     setQuiz({
       ...quiz,
       questions: quiz.questions.map((q) => {
         if (q.id === questionId) {
           return {
             ...q,
-            comments: [
-              ...q.comments,
-              comment,
-            ],
+            comments: [...q.comments, comment],
           };
         } else {
           return q;
         }
       }),
     });
-    console.log(quiz)
   }
-
-  console.log("rerender sdkgjlskgj");
-  console.log(options);
   return (
     <div
       className={`w-full text-black ${comingSoon.className} min-h-screen m-0 flex flex-col`}
@@ -348,9 +337,10 @@ export default function QuizPageUI({
           <div className="flex flex-row gap-4 items-center">
             {quiz.links &&
               quiz.links.map((link) => (
-                <QuizLinkComponent key={link.id} hover={
-                  <p>{link.description}</p>
-                }>
+                <QuizLinkComponent
+                  key={link.id}
+                  hover={<p>{link.description}</p>}
+                >
                   <DynamicIcon
                     // @ts-expect-error Afaik there isn't type for the DynamicIcon name attribute sadly
                     name={linkTypes[link.type].icon} //

@@ -1,3 +1,1 @@
-export default async function QuizEditor() {
-  
-}
+export default async function QuizEditor() {}

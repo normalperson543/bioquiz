@@ -1,12 +1,16 @@
 import { comingSoon } from "@/lib/fonts";
-import {
-  PlusIcon,
-} from "lucide-react";
+import { PlusIcon } from "lucide-react";
 import Button from "../button";
 import { createQuiz } from "@/lib/actions";
 import QuizResult from "../quiz-result";
 import { Quiz } from "@prisma/client";
-export default function DashboardUI({ username, createdQuizzes }: { username: string, createdQuizzes: Quiz[] }) {
+export default function DashboardUI({
+  username,
+  createdQuizzes,
+}: {
+  username: string;
+  createdQuizzes: Quiz[];
+}) {
   return (
     <div className={`${comingSoon.className} flex flex-col gap-2`}>
       <div className="bg-pink-100 p-4 flex flex-col gap-2">
@@ -23,11 +27,17 @@ export default function DashboardUI({ username, createdQuizzes }: { username: st
           </div>
         </div>
       </div>
-      
-      <div className="flex flex-col p-4">
+
+      <div className="flex flex-col p-4 gap-2">
         <h2 className="text-2xl font-bold">my quizzes</h2>
-        {createdQuizzes.map((quiz) =>
-          <QuizResult id={quiz.id} name={quiz.title} creationDate={quiz.dateCreated} key={quiz.id}/>)}
+        {createdQuizzes.map((quiz) => (
+          <QuizResult
+            id={quiz.id}
+            name={quiz.title}
+            creationDate={quiz.dateCreated}
+            key={quiz.id}
+          />
+        ))}
       </div>
     </div>
   );

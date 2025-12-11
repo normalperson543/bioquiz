@@ -12,19 +12,19 @@ export async function getQuiz(id: string) {
         include: {
           options: {
             include: {
-              answered: true
-            }
+              answered: true,
+            },
           },
           comments: {
             include: {
-              user: true
-            }
+              user: true,
+            },
           },
-          answered: true
+          answered: true,
         },
         orderBy: {
-          dateCreated: "asc"
-        }
+          dateCreated: "asc",
+        },
       },
     },
   });
@@ -41,8 +41,8 @@ export async function getUserFromDb(id: string) {
 export async function getQuizzes(userId: string) {
   const quizzes = await prisma.quiz.findMany({
     where: {
-      profileId: userId
-    }
-  })
-  return quizzes
+      profileId: userId,
+    },
+  });
+  return quizzes;
 }

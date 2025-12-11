@@ -12,17 +12,23 @@ export default async function QuizPage({
 
   const currentUser = await auth();
   const quiz = await getQuiz(id);
-  
+
   if (!quiz) {
-    notFound()
+    notFound();
   }
 
   if (!currentUser.isAuthenticated && quiz && quiz.lockAnswersAutomatically) {
     currentUser.redirectToSignIn({ returnBackUrl: `/quizzes/${id}` });
   }
-  if ((!currentUser.isAuthenticated && quiz && !quiz.isPublic) || (currentUser.isAuthenticated && quiz && !quiz.isPublic && quiz.owner.id !== currentUser.userId)) {
+  if (
+    (!currentUser.isAuthenticated && quiz && !quiz.isPublic) ||
+    (currentUser.isAuthenticated &&
+      quiz &&
+      !quiz.isPublic &&
+      quiz.owner.id !== currentUser.userId)
+  ) {
     // private project, 404
-    notFound()
+    notFound();
   }
 
   return <QuizPageUI quiz={quiz} />;

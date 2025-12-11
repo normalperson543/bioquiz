@@ -6,7 +6,7 @@ import {
   XIcon,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
-import { Comment as CommentType, Profile } from "@prisma/client";
+import { Profile } from "@prisma/client";
 import { icons } from "@/lib/constants";
 import Button from "../button";
 import { useUser } from "@clerk/nextjs";
@@ -44,7 +44,7 @@ export default function QuestionCard({
   answered: Profile[];
   questionId: string;
   quizId: string;
-  onAddComment: (comment: CommentType) => void;
+  onAddComment: (comment: CommentWithPublicInfo) => void;
 }) {
   const [selAnswer, setSelAnswer] = useState("");
   const user = useUser();
@@ -53,10 +53,7 @@ export default function QuestionCard({
   useEffect(() => {
     if (loaded.current) return;
     if (!user.isLoaded) return;
-    console.log("dksfjlsk");
     options.forEach((option) => {
-      console.log(user);
-      console.log(option);
       if (
         option.answered.findIndex(
           (profile: Profile) => profile.id === (user.user?.id as string),
@@ -159,8 +156,8 @@ export default function QuestionCard({
             <CommentTextbox
               profilePicture={user.user?.imageUrl as string}
               onSubmit={async (contents) => {
-                const comment = await createComment(questionId, contents, quizId);
-                onAddComment(comment)
+                const comment = await createComment(questionId, contents);
+                onAddComment(comment);
               }}
             />
           )}

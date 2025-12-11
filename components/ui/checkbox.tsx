@@ -1,6 +1,12 @@
 import { ChangeEvent } from "react";
 
-export default function Checkbox({ checked, onChange }: {checked: boolean, onChange: (e: ChangeEvent<HTMLInputElement>) => void}) {
+export default function Checkbox({
+  checked,
+  onChange,
+}: {
+  checked: boolean;
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+}) {
   return (
     <input
       type="checkbox"
@@ -9,5 +15,5 @@ export default function Checkbox({ checked, onChange }: {checked: boolean, onCha
       className="border-2 bg-pink-100 border-pink-200 rounded-sm p-2"
       value={1}
     />
-  )
+  );
 }

@@ -1,7 +1,15 @@
-'use client'
-import Image from "next/image"
+"use client";
+import Image from "next/image";
 
-export default function Comment({ profilePicture, username, contents }: {profilePicture: string, username: string, contents: string}) {
+export default function Comment({
+  profilePicture,
+  username,
+  contents,
+}: {
+  profilePicture: string;
+  username: string;
+  contents: string;
+}) {
   return (
     <div className="flex flex-row gap-2 bg-pink-200 p-4 rounded-sm">
       <Image
@@ -16,5 +24,5 @@ export default function Comment({ profilePicture, username, contents }: {profile
         <p>{contents}</p>
       </div>
     </div>
-  )
+  );
 }

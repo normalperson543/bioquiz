@@ -1,9 +1,6 @@
 import Link from "next/link";
 import Button from "./button";
-import {
-  FileCheckIcon,
-  EditIcon,
-} from "lucide-react";
+import { FileCheckIcon, EditIcon } from "lucide-react";
 
 export default function QuizResult({
   name,

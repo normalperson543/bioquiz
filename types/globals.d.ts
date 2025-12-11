@@ -1,9 +1,9 @@
-export {}
+export {};
 
 declare global {
   interface CustomJwtSessionClaims {
-    userId: string,
-    username: string,
-    image_url: string
+    userId: string;
+    username: string;
+    image_url: string;
   }
 }

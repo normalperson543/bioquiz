@@ -11,10 +11,10 @@ export default function CommentTextbox({
   onSubmit: (postContents: string) => void;
 }) {
   const [commentText, setCommentText] = useState("");
-  
+
   function handleSubmit() {
-    onSubmit(commentText)
-    setCommentText("")
+    onSubmit(commentText);
+    setCommentText("");
   }
   return (
     <div className="flex flex-row gap-2 w-full items-start">

@@ -20,7 +20,7 @@ export default function HomepageUI() {
       </div>
       <div className="flex flex-col gap-2 p-12">
         <h3 className="text-2xl font-bold">
-          so how does bioquiz work? {">"}w{"<"}
+          so how does bioquiz work? {">"}.{"<"}
         </h3>
         <p>
           create an account, create a quiz, add questions about yourself, and

@@ -12,9 +12,8 @@ export async function addQuestion(
   options: Option[],
   correctAnswer: string,
   correctAnswerExplanation: string,
-  quizId: string
+  quizId: string,
 ) {
-  console.log(options);
   await prisma.question.create({
     data: {
       id: questionId,
@@ -34,47 +33,47 @@ export async function addQuestion(
     include: {
       options: {
         include: {
-          answered: true
-        }
+          answered: true,
+        },
       },
       answered: true,
       comments: {
         include: {
-          user: true
-        }
-      }
+          user: true,
+        },
+      },
     },
   });
 
   return question;
 }
 export async function markAnswered(optionId: string) {
-  const user = await auth()
-  if (!user.userId) throw new Error("No user")
+  const user = await auth();
+  if (!user.userId) throw new Error("No user");
   const option = await prisma.option.update({
     where: {
-      id: optionId
+      id: optionId,
     },
     data: {
       answered: {
         connect: {
-          id: user.userId
-        }
-      }
-    }
-  })
+          id: user.userId,
+        },
+      },
+    },
+  });
   await prisma.question.update({
     where: {
-      id: option.questionId as string
+      id: option.questionId as string,
     },
     data: {
       answered: {
         connect: {
-          id: user.userId
-        }
-      }
-    }
-  })
+          id: user.userId,
+        },
+      },
+    },
+  });
 }
 export async function updateQuestion(
   questionId: string,
@@ -82,9 +81,8 @@ export async function updateQuestion(
   options: Option[],
   correctAnswer: string,
   correctAnswerExplanation: string,
-  quizId: string
+  quizId: string,
 ) {
-  console.log(options);
   await prisma.question.update({
     where: {
       id: questionId,
@@ -101,13 +99,12 @@ export async function updateQuestion(
       questionId: questionId,
     },
   });
-  console.log(options)
   await prisma.option.createMany({
     data: options.map((option) => ({
       name: option.name,
       id: option.id,
       icon: option.icon,
-      questionId: option.questionId
+      questionId: option.questionId,
     })),
   });
   const question = await prisma.question.findUnique({
@@ -117,89 +114,94 @@ export async function updateQuestion(
     include: {
       options: {
         include: {
-          answered: true
-        }
+          answered: true,
+        },
       },
       answered: true,
       comments: {
         include: {
-          user: true
-        }
-      }
+          user: true,
+        },
+      },
     },
   });
 
   return question;
 }
 export async function createQuiz() {
-  const currentUser = await auth()
+  const currentUser = await auth();
   if (currentUser && currentUser.userId) {
     const quiz = await prisma.quiz.create({
       data: {
-        profileId: currentUser.userId
-      }
-    })
-    redirect(`/quizzes/${quiz.id}`)
+        profileId: currentUser.userId,
+      },
+    });
+    redirect(`/quizzes/${quiz.id}`);
   } else {
     currentUser.redirectToSignIn({ returnBackUrl: `/dashboard` });
   }
-
 }
-export async function updateQuiz(id: string, title: string, description: string, isPublic: boolean, lockedFromAnswering: boolean) {
+export async function updateQuiz(
+  id: string,
+  title: string,
+  description: string,
+  isPublic: boolean,
+  lockedFromAnswering: boolean,
+) {
   const updatedQuiz = await prisma.quiz.update({
     where: {
-      id: id
+      id: id,
     },
     data: {
       title: title,
       description: description,
       isPublic: isPublic,
-      lockAnswersAutomatically: lockedFromAnswering
-    }
-  })
-  return updatedQuiz
+      lockAnswersAutomatically: lockedFromAnswering,
+    },
+  });
+  return updatedQuiz;
 }
 export async function updateQuizLinks(id: string, quizLinks: QuizLink[]) {
   await prisma.quizLink.deleteMany({
     where: {
-      quizId: id
-    }
-  })
+      quizId: id,
+    },
+  });
   const createdQuizLinks = await prisma.quizLink.createMany({
-    data: quizLinks
-  })
-  return createdQuizLinks
+    data: quizLinks,
+  });
+  return createdQuizLinks;
 }
 export async function deleteQuiz(id: string) {
   await prisma.quiz.delete({
     where: {
-      id: id
-    }
-  })
-  revalidatePath(`/quizzes/${id}`)
-  redirect("/dashboard")
+      id: id,
+    },
+  });
+  revalidatePath(`/quizzes/${id}`);
+  redirect("/dashboard");
 }
 
-export async function createComment(questionId: string, commentText: string, quizId: string) {
-  const user = await auth()
+export async function createComment(questionId: string, commentText: string) {
+  const user = await auth();
 
   const comment = await prisma.comment.create({
     data: {
       questionId: questionId,
       contents: commentText,
-      profileId: user.userId as string
+      profileId: user.userId as string,
     },
     include: {
-      user: true
-    }
-  })
-  return comment
+      user: true,
+    },
+  });
+  return comment;
 }
 export async function deleteQuestion(questionId: string) {
   const question = await prisma.question.delete({
     where: {
-      id: questionId
-    }
-  })
-  return question
+      id: questionId,
+    },
+  });
+  return question;
 }

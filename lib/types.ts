@@ -8,15 +8,15 @@ export type QuizWithPublicInfo = Prisma.QuizGetPayload<{
       include: {
         options: {
           include: {
-            answered: true
-          }
-        },
+            answered: true;
+          };
+        };
         comments: {
           include: {
-            user: true
-          }
-        },
-        answered: true
+            user: true;
+          };
+        };
+        answered: true;
       };
     };
   };
@@ -24,12 +24,12 @@ export type QuizWithPublicInfo = Prisma.QuizGetPayload<{
 
 export type OptionWithPublicInfo = Prisma.OptionGetPayload<{
   include: {
-    answered: true
-  }
-}>
+    answered: true;
+  };
+}>;
 
 export type CommentWithPublicInfo = Prisma.CommentGetPayload<{
   include: {
-    user: true
-  }
-}>
+    user: true;
+  };
+}>;

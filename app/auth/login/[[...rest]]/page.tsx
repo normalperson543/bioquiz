@@ -2,7 +2,8 @@ import { comingSoon } from "@/lib/fonts";
 import { SignIn } from "@clerk/nextjs";
 
 export default function AuthLoginPage() {
-  const buttonCn = "rounded-sm bg-pink-200  border-pink-300 border-solid border-2 shadow-none! hover:bg-pink-300 font-bold! duration-0! cursor-pointer p-3"
+  const buttonCn =
+    "rounded-sm bg-pink-200  border-pink-300 border-solid border-2 shadow-none! hover:bg-pink-300 font-bold! duration-0! cursor-pointer p-3";
   return (
     <div className="w-full h-full flex flex-col items-center justify-center bg-pink-50">
       <SignIn
@@ -16,7 +17,7 @@ export default function AuthLoginPage() {
             alternativeMethodsBlockButton: `${buttonCn}`,
             socialButtonsBlockButtonText: "font-black font-bold",
             alternativeMethodsBlockButtonText: "font-black font-bold",
-            headerTitle: "font-bold text-xl"
+            headerTitle: "font-bold text-xl",
           },
         }}
       />
