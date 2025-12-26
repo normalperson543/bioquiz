@@ -8,7 +8,7 @@ const isPublicRoute = createRouteMatcher([
   "/",
 ]);
 
-function proxyMiddleware(req: NextRequest) {
+function proxyMiddleware(req: any) {
   if (req.nextUrl.pathname.match("__clerk")) {
     const proxyHeaders = new Headers(req.headers);
     proxyHeaders.set(
